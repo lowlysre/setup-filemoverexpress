@@ -5,6 +5,9 @@ hero:
   name: Setup File Mover Express
   text: S3 transfers in GitHub Actions
   tagline: Set up AWS Labs' File Mover Express CLI with this independent action.
+  image:
+    src: /logo.svg
+    alt: Setup File Mover Express logo
   actions:
     - theme: brand
       text: Your first upload
