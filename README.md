@@ -74,3 +74,9 @@ Full docs are at [lowlysre.github.io/setup-filemoverexpress](https://lowlysre.gi
 - [Authenticate with configure-aws-credentials](docs/how-to/aws-credentials.md)
 - [Upload and download faster](docs/how-to/transfers.md)
 - [Security model](docs/explanation/security.md)
+
+## License
+
+This action is licensed under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE) for attribution. It downloads and runs the File Mover Express CLI, which has its own [Apache-2.0 license](https://github.com/awslabs/filemoverexpress/blob/main/LICENSE). Third-party code bundled into the action is listed in [dist/THIRD_PARTY_LICENSES.txt](dist/THIRD_PARTY_LICENSES.txt).
+
+AWS and Amazon S3 are trademarks of Amazon.com, Inc. or its affiliates. This project is independent and not affiliated with or endorsed by AWS.

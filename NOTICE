@@ -1,0 +1,10 @@
+setup-filemoverexpress
+Copyright 2026 lowlysre
+
+This product is an independent project and is not affiliated with or endorsed by Amazon Web Services.
+
+It installs and runs the File Mover Express CLI from https://github.com/awslabs/filemoverexpress, which is licensed separately under the Apache License 2.0. This project doesn't include or modify that software.
+
+Third-party code bundled into dist/index.js is listed, with each license, in dist/THIRD_PARTY_LICENSES.txt.
+
+AWS and Amazon S3 are trademarks of Amazon.com, Inc. or its affiliates.
