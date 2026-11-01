@@ -4,13 +4,12 @@
 }
 
 @media (min-width: 960px) {
-  .VPSidebar .VPSidebarNavTitle,
-  .VPNavBarTitle .title {
-    padding-right: 16px;
+  :root {
+    --vp-sidebar-width: 320px;
   }
 
-  .VPSidebar {
-    padding-right: 16px;
+  .VPNavBar.has-sidebar .title {
+    padding-right: 48px;
   }
 }
 
