@@ -318,11 +318,6 @@ jobs:
             echo "::error::upload logged errors"
             exit 1
           fi
-          # A configuration without the CLI's default general settings makes it warn about max-active-transfers.
-          if grep -q 'Invalid configuration' upload.log; then
-            echo "::error::upload warned about an invalid configuration"
-            exit 1
-          fi
 
       - name: Assert object keys
         run: |

@@ -57,6 +57,10 @@ FATAL  [2026-11-01 08:40:15] ...
 
 Because failed transfers exit 0, scan the output as shown in [Fail the job on transfer errors](../how-to/fail-on-errors.md). [Exit codes](../explanation/exit-codes.md) covers the reasoning.
 
+## Known warnings
+
+`upload` and `download` log `WARNING ... Invalid configuration: max-active-transfers=0` on every run where `--max-active-transfers` isn't passed, even though the configuration holds a value. In 1.1.1 the check reads the flag's own value, which defaults to `0`, before the configuration is applied (from reading the upstream source, not from observed behavior of the applied limit). The warning doesn't fail the step. Pass `--max-active-transfers` to silence it, for example `--max-active-transfers 100`, the default. [Upload and download faster](../how-to/transfers.md#tune-throughput) covers the flag.
+
 ## Files under FME_CONFIG_DIR
 
 | File                 | Contents                                                                                       |
