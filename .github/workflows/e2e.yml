@@ -314,7 +314,7 @@ jobs:
           set -euo pipefail
           filemoverexpress upload default payload --prefix "ci/${GITHUB_RUN_ID}" --chunk-size 5 2>&1 | tee upload.log
           # The CLI exits 0 even when transfers fail, so check its log lines.
-          if grep -E '^(ERROR|FATAL)' upload.log; then
+          if grep -E $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' upload.log; then
             echo "::error::upload logged errors"
             exit 1
           fi
@@ -341,7 +341,7 @@ jobs:
         run: |
           set -euo pipefail
           filemoverexpress download default out "ci/${GITHUB_RUN_ID}/" 2>&1 | tee download.log
-          if grep -E '^(ERROR|FATAL)' download.log; then
+          if grep -E $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' download.log; then
             echo "::error::download logged errors"
             exit 1
           fi
@@ -457,7 +457,7 @@ jobs:
           mkdir -p payload
           echo "profile interop" > payload/hello.txt
           filemoverexpress upload default payload --prefix "ci/${GITHUB_RUN_ID}" 2>&1 | tee upload.log
-          if grep -E '^(ERROR|FATAL)' upload.log; then
+          if grep -E $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' upload.log; then
             echo "::error::upload logged errors"
             exit 1
           fi

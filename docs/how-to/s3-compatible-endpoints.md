@@ -49,7 +49,7 @@ jobs:
           echo hello > payload/a.txt
           head -c 5242880 /dev/urandom > payload/sub/big.bin
           filemoverexpress upload default payload --prefix ci/run1 2>&1 | tee fme.log
-          if grep -qE '^(ERROR|FATAL)' fme.log; then exit 1; fi
+          if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then exit 1; fi
 
       - name: Check the objects landed
         shell: bash

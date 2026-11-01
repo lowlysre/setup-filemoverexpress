@@ -185,6 +185,15 @@ describe('install', () => {
     expect(tc.downloadTool).not.toHaveBeenCalled()
   })
 
+  it('does not cache a GitHub-flagged prerelease that has a stable-looking tag', async () => {
+    mocks.listReleases.mockResolvedValue([{ ...releaseFor(linux, '1.2.0'), prerelease: true }])
+
+    const result = await install(options(linux, { spec: parseVersionSpec('1.2.0'), allowPrerelease: true }))
+
+    expect(result.version).toBe('1.2.0')
+    expect(mocks.cacheDir).not.toHaveBeenCalled()
+  })
+
   it('skips releases without this platform asset when resolving a range, but names the gap for an exact version', async () => {
     const withAsset = releaseFor(linux)
     const withoutAsset = {

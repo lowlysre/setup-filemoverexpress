@@ -141,7 +141,7 @@ Set `role-duration-seconds` to cover the whole transfer plus some margin, and gi
   shell: bash
   run: |
     filemoverexpress upload default ./masters 2>&1 | tee fme.log
-    if grep -qE '^(ERROR|FATAL)' fme.log; then exit 1; fi
+    if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then exit 1; fi
 ```
 
 The role has to allow it. Raise its maximum session duration, up to 12 hours:

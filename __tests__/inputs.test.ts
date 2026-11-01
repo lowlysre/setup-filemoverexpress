@@ -97,7 +97,7 @@ describe('parseInputs', () => {
         { processArch: 'arm64', configDirDefault: 'default-config' }
       )
     ).toEqual({
-      spec: { kind: 'range', range: '>=1.0.0 <2.0.0-0' },
+      spec: { kind: 'range', range: '^1.0.0' },
       versionLabel: '^1.0.0',
       arch: 'x64',
       checkLatest: false,
@@ -226,7 +226,7 @@ describe('getInputs', () => {
 
     const result = getInputs()
     expect(result).toMatchObject({
-      spec: { kind: 'range', range: '>=1.0.0 <2.0.0-0' },
+      spec: { kind: 'range', range: '^1.0.0' },
       versionLabel: '^1.0.0',
       arch: 'arm64',
       checkLatest: true,

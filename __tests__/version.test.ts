@@ -154,9 +154,14 @@ describe('selectRelease', () => {
     expect(resolved.release.tag_name).not.toBe('nightly')
   })
 
+  it('includes a prerelease at the lower boundary of a wildcard range when prereleases are allowed', () => {
+    expect(selectRelease(releases, parseVersionSpec('1.2.x'), true).version).toBe('1.2.0-rc.1')
+    expect(() => selectRelease(releases, parseVersionSpec('1.2.x'), false)).toThrow(/matches '1\.2\.x'/)
+  })
+
   it('lists available versions when nothing matches', () => {
     expect(() => selectRelease(releases, parseVersionSpec('2.x'), false)).toThrow(
-      "No File Mover Express release matches '>=2.0.0 <3.0.0-0'. Available versions: 1.1.1, 1.1.0, 1.0.0. Set allow-prerelease: true to include prereleases."
+      "No File Mover Express release matches '2.x'. Available versions: 1.1.1, 1.1.0, 1.0.0. Set allow-prerelease: true to include prereleases."
     )
   })
 
@@ -225,6 +230,11 @@ describe('selectCachedVersion', () => {
     const spec = parseVersionSpec('>=1.2.0-rc.1 <1.2.0')
     expect(selectCachedVersion(['1.2.0-rc.2'], spec, false)).toBeUndefined()
     expect(selectCachedVersion(['1.2.0-rc.2'], spec, true)).toBe('1.2.0-rc.2')
+  })
+
+  it('ignores a cached prerelease inside a wildcard range unless prereleases are allowed', () => {
+    expect(selectCachedVersion(['1.2.0-rc.1'], parseVersionSpec('1.2.x'), false)).toBeUndefined()
+    expect(selectCachedVersion(['1.2.0-rc.1'], parseVersionSpec('1.2.x'), true)).toBe('1.2.0-rc.1')
   })
 
   it('returns undefined when no cached version satisfies the range', () => {

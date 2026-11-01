@@ -1,10 +1,15 @@
+import { existsSync } from 'node:fs'
+import { readFile, writeFile } from 'node:fs/promises'
+import * as path from 'node:path'
 import * as exec from '@actions/exec'
 import type { getExecOutput } from '@actions/exec'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AWS_ENV } from '../src/business/aws.js'
+import { withInfoLogging } from '../src/business/config.js'
 import { CONFIG_DIR_ENV } from '../src/constants.js'
 import { credentialValidationError, credentialsValidated, failureDetail, stripAnsi } from '../src/business/validate.js'
 import { validateCredentials } from '../src/validate.js'
+import { makeTempDir, removeDir } from './helpers.js'
 
 vi.mock('@actions/exec', () => ({
   getExecOutput: vi.fn<typeof getExecOutput>()
@@ -130,25 +135,48 @@ describe('credentialValidationError', () => {
 })
 
 describe('validateCredentials adapter', () => {
-  it('runs the CLI with the config directory and accepts explicit success output', async () => {
-    vi.mocked(exec.getExecOutput).mockResolvedValue({
-      exitCode: 0,
-      stdout: 'Validated credentials for transfer-a',
-      stderr: ''
+  let configDir: string
+
+  beforeEach(async () => {
+    configDir = await makeTempDir('fme-validate-test-')
+  })
+
+  afterEach(async () => {
+    await removeDir(configDir)
+  })
+
+  it('validates an isolated copy of the config with INFO logging and leaves the original untouched', async () => {
+    const original =
+      'logging:\n  severity: error\nprotocols:\n  s3:\n    transferProfiles:\n      transfer-a:\n        bucket: b\n'
+    await writeFile(path.join(configDir, 'configuration.yaml'), original)
+    let seen = ''
+    let isolatedDir = ''
+    vi.mocked(exec.getExecOutput).mockImplementation(async (_command, _args, options) => {
+      isolatedDir = options?.env?.[CONFIG_DIR_ENV] ?? ''
+      seen = await readFile(path.join(isolatedDir, 'configuration.yaml'), 'utf8')
+      return { exitCode: 0, stdout: 'Validated credentials for transfer-a', stderr: '' }
     })
+
     await expect(
-      validateCredentials('C:\\Program Files\\fme\\fme-bin', 'C:\\config\\dir', 'transfer-a', '')
+      validateCredentials('C:\\Program Files\\fme\\fme-bin', configDir, 'transfer-a', '')
     ).resolves.toBeUndefined()
 
     expect(exec.getExecOutput).toHaveBeenCalledWith(
       '"C:\\Program Files\\fme\\fme-bin"',
       ['validate-credentials', 'transfer-a'],
-      expect.objectContaining({
-        env: expect.objectContaining({ [CONFIG_DIR_ENV]: 'C:\\config\\dir' }),
-        ignoreReturnCode: true,
-        silent: true
-      })
+      expect.objectContaining({ ignoreReturnCode: true, silent: true })
     )
+    expect(isolatedDir).not.toBe(configDir)
+    expect(seen).toContain('severity: info')
+    expect(seen).toContain('bucket: b')
+    expect(existsSync(isolatedDir)).toBe(false)
+    await expect(readFile(path.join(configDir, 'configuration.yaml'), 'utf8')).resolves.toBe(original)
+  })
+
+  it('sets INFO logging when the config has none, and when no config exists', () => {
+    expect(withInfoLogging('protocols: {}\n')).toContain('severity: info')
+    expect(withInfoLogging('')).toContain('severity: info')
+    expect(withInfoLogging('- a list\n')).toBe('- a list\n')
   })
 
   it('converts a failed CLI result into an exception', async () => {
@@ -158,7 +186,7 @@ describe('validateCredentials adapter', () => {
       stderr: 'ERROR: expired token'
     })
 
-    await expect(validateCredentials('fme-bin', 'config', 'transfer-a', 'known-profile')).rejects.toThrow(
+    await expect(validateCredentials('fme-bin', configDir, 'transfer-a', 'known-profile')).rejects.toThrow(
       /ERROR: expired token/
     )
   })

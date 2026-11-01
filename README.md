@@ -40,7 +40,7 @@ steps:
     shell: bash
     run: |
       filemoverexpress upload default ./dist 2>&1 | tee fme.log
-      if grep -qE '^(ERROR|FATAL)' fme.log; then
+      if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then
         echo "::error::File Mover Express reported transfer errors"
         exit 1
       fi

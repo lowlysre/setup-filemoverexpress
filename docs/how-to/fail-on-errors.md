@@ -11,7 +11,7 @@ Every log line starts with its level: `INFO`, `WARNING`, `ERROR`, or `FATAL`. Sa
   shell: bash
   run: |
     filemoverexpress upload default ./renders --prefix "builds/${GITHUB_RUN_ID}" 2>&1 | tee fme.log
-    if grep -qE '^(ERROR|FATAL)' fme.log; then
+    if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then
       echo "::error::File Mover Express reported transfer errors"
       exit 1
     fi
@@ -22,6 +22,7 @@ The pieces that matter:
 - `shell: bash` runs the script with `-eo pipefail`, so a non-zero exit from the CLI still fails the step through the pipe
 - `2>&1` sends both streams into the log file
 - `tee` keeps the output in the job log as it streams
+- The `grep` pattern skips the color codes the CLI writes even when its output isn't a terminal, so a colored `ERROR` still matches
 
 This works on every runner image, including Windows, where `shell: bash` uses Git Bash.
 
@@ -34,7 +35,7 @@ An upload of a path that doesn't exist logs `WARNING` and exits 0. To treat that
   shell: bash
   run: |
     filemoverexpress upload default ./renders 2>&1 | tee fme.log
-    if grep -qE '^(ERROR|FATAL)' fme.log; then
+    if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then
       echo "::error::File Mover Express reported transfer errors"
       exit 1
     fi

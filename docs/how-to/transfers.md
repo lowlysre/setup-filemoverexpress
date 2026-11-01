@@ -9,7 +9,7 @@
   shell: bash
   run: |
     filemoverexpress download default ./incoming "builds/${GITHUB_RUN_ID}/" 2>&1 | tee fme.log
-    if grep -qE '^(ERROR|FATAL)' fme.log; then exit 1; fi
+    if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then exit 1; fi
 ```
 
 The arguments are the transfer profile, a local destination, and the S3 prefix, in that order. Use a relative destination; upstream documents only relative destinations for downloads. Downloads need `s3:ListBucket` and `s3:GetObject`, which the [tutorial's policy](../tutorials/first-upload.md) covers.
@@ -54,7 +54,7 @@ jobs:
       - shell: bash
         run: |
           filemoverexpress upload default renders --prefix "runs/${GITHUB_RUN_ID}" 2>&1 | tee fme.log
-          if grep -qE '^(ERROR|FATAL)' fme.log; then exit 1; fi
+          if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then exit 1; fi
 
   publish:
     needs: render
@@ -73,7 +73,7 @@ jobs:
       - shell: bash
         run: |
           filemoverexpress download default ./in "runs/${GITHUB_RUN_ID}/" 2>&1 | tee fme.log
-          if grep -qE '^(ERROR|FATAL)' fme.log; then exit 1; fi
+          if grep -qE $'^(\033\\[[0-9;]*m)*(ERROR|FATAL)' fme.log; then exit 1; fi
           ls -R "in/runs/${GITHUB_RUN_ID}/renders"
 ```
 

@@ -13,12 +13,13 @@ export function parseVersionSpec(input: string): VersionSpec {
   if (exact && /^v?\d+\.\d+\.\d+/.test(spec)) {
     return { kind: 'exact', version: exact }
   }
-  const range = semver.validRange(spec.replace(/^v(?=\d)/, ''))
-  if (!range) {
+  const range = spec.replace(/^v(?=\d)/, '')
+  if (!semver.validRange(range)) {
     throw new Error(
       `Invalid filemoverexpress-version '${input}'. Use 'latest', an exact version such as '1.1.1', or a semver range such as '1.x'.`
     )
   }
+  // Keep the range as written: semver expands wildcards differently once includePrerelease is known.
   return { kind: 'range', range }
 }
 

@@ -137,3 +137,16 @@ export function mergeTransferProfile(
   doc.setIn(['protocols', 's3', 'transferProfiles', options.name], doc.createNode(buildTransferProfile(options)))
   return doc.toString()
 }
+
+/**
+ * Returns the configuration with INFO logging, which File Mover Express needs to print the success line
+ * that validation looks for. Unparseable or non-mapping input is returned unchanged.
+ */
+export function withInfoLogging(existingYaml: string): string {
+  const doc = parseDocument(existingYaml)
+  if (doc.errors.length > 0 || (doc.contents !== null && !isMap(doc.contents))) {
+    return existingYaml
+  }
+  doc.setIn(['logging', 'severity'], 'info')
+  return doc.toString()
+}

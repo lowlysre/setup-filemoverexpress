@@ -86,8 +86,11 @@ export async function install(options: InstallOptions): Promise<InstallResult> {
       core.info('Upstream does not sign Linux builds; integrity is established by the SHA-256 digest.')
     }
 
-    // Unverified installs must never enter the tool cache: later verified runs would trust them.
-    if (!options.verifySignature && target.kind !== 'binary') {
+    // The tool cache keys only on the version, so entries must be safe for every later request:
+    // unverified installs would be trusted by verified runs, and a GitHub-flagged prerelease with a
+    // stable-looking tag would be accepted by requests that disallow prereleases.
+    const flaggedPrerelease = release.prerelease && !semver.prerelease(version)
+    if ((!options.verifySignature && target.kind !== 'binary') || flaggedPrerelease) {
       keepStaging = true
       return { version, binPath: path.join(staging, target.binaryName), cacheHit: false }
     }
