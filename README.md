@@ -1,8 +1,4 @@
 <p align="center">
-  <img src="docs/public/logo.svg" alt="Setup File Mover Express logo" width="96">
-</p>
-
-<p align="center">
   <img src="docs/public/social-card.png" alt="Setup File Mover Express: install and verify AWS Labs' CLI in GitHub Actions" width="720">
 </p>
 
