@@ -103,7 +103,7 @@ describe('extractCli: nsis', () => {
     const installer = path.join(dir, target.assetName)
     await writeFile(installer, 'MZ-installer')
     const dest = path.join(dir, 'out')
-    const sevenZip = path.join(dir, 'bin', '7z')
+    const sevenZip = path.join(dir, 'Program Files', '7-Zip', '7z')
     vi.mocked(io.which).mockResolvedValue(sevenZip)
     vi.mocked(exec.exec).mockImplementation(async (_tool, args) => {
       const out = (args ?? []).find(arg => arg.startsWith('-o'))?.slice(2) ?? ''
@@ -118,7 +118,7 @@ describe('extractCli: nsis', () => {
     expect(io.which).toHaveBeenCalledWith('7z', false)
     expect(exec.exec).toHaveBeenCalledTimes(1)
     expect(exec.exec).toHaveBeenCalledWith(
-      sevenZip,
+      `"${sevenZip}"`,
       ['e', '-y', '-bso0', '-bsp0', `-o${dest}`, installer, 'filemoverexpress.exe'],
       { silent: true }
     )

@@ -137,7 +137,7 @@ When the transfer profile has a checksum algorithm set, uploads hash each file f
 - `--max-active-transfers` times `--threads` is roughly the number of files the CLI opens. If it exceeds the runner's open-file limit, the CLI refuses to start and names both numbers. Lower one of the flags, or raise the limit with `ulimit -n` in the same `run` step
 - The CLI warns when the machine has less than 6 GiB of RAM. Standard GitHub-hosted runners have more; small self-hosted runners may not
 - Runner network bandwidth is the ceiling no matter what the flags say
-- [Transfer Acceleration](./transfer-profiles.md#use-transfer-acceleration) helps when the runner is far from the bucket's region
+- [Transfer Acceleration](./transfer-profiles.md#use-transfer-acceleration) helps when the runner is far from the bucket's region, but File Mover Express 1.1.1 ignores the setting
 
 ## Sync or delete
 

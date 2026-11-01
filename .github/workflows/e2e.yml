@@ -605,13 +605,12 @@ jobs:
           retention-days: 7
 
   are-we-good:
-    name: are-we-good
+    name: e2e-are-we-good
     needs: [install, versions, version-file, roundtrip, profile-interop, negative]
     if: ${{ always() }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
-    permissions:
-      checks: write # create the "E2E / are-we-good" check run
+    permissions: {}
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
@@ -622,4 +621,3 @@ jobs:
         uses: lowlydba/are-we-good@6b10e5f2697555fbaf7f8f37ce38d4454c954a4c # v1.2.2
         with:
           jobs: ${{ toJSON(needs) }}
-          create-check-run: true

@@ -221,6 +221,12 @@ describe('selectCachedVersion', () => {
     expect(selectCachedVersion(cached, parseVersionSpec('^1.0.0'), true)).toBe('1.2.0-rc.1')
   })
 
+  it('ignores a cached prerelease inside a prerelease range unless prereleases are allowed', () => {
+    const spec = parseVersionSpec('>=1.2.0-rc.1 <1.2.0')
+    expect(selectCachedVersion(['1.2.0-rc.2'], spec, false)).toBeUndefined()
+    expect(selectCachedVersion(['1.2.0-rc.2'], spec, true)).toBe('1.2.0-rc.2')
+  })
+
   it('returns undefined when no cached version satisfies the range', () => {
     expect(selectCachedVersion(cached, parseVersionSpec('2.x'), false)).toBeUndefined()
     expect(selectCachedVersion([], parseVersionSpec('1.x'), false)).toBeUndefined()

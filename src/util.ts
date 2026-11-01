@@ -8,3 +8,8 @@ export function tempRoot(): string {
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
 }
+
+/** @actions/exec parses its first argument as a command line, so a path containing spaces must be quoted. */
+export function quoteExecutable(executable: string): string {
+  return `"${executable}"`
+}

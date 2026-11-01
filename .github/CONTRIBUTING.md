@@ -62,7 +62,7 @@ Then point a transfer profile at it with `bucket: fme-e2e` and `endpoint: http:/
 
 ### Required checks
 
-The `main` ruleset requires two checks: `CI / are-we-good` and `E2E / are-we-good`. Each is the last job of its workflow and rolls up every other job's result with lowlydba/are-we-good, so adding or renaming a job doesn't change the ruleset. Both workflows run on every pull request with no path filters, since a required check that never reports blocks the merge.
+The `main` ruleset requires two checks: `ci-are-we-good` and `e2e-are-we-good`. Each is the last job of its workflow and rolls up every other job's result with lowlydba/are-we-good, so adding or renaming a job doesn't change the ruleset. The job names are distinct because a required check is matched by job name alone, and the jobs are native check runs so pull requests from forks and Dependabot, which get a read-only token, can report them. Both workflows run on every pull request with no path filters, since a required check that never reports blocks the merge.
 
 ## Pull requests
 

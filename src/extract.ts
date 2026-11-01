@@ -5,7 +5,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as io from '@actions/io'
 import type { Target } from './platform.js'
-import { tempRoot } from './util.js'
+import { quoteExecutable, tempRoot } from './util.js'
 
 /**
  * Places the CLI binary from a downloaded release asset into `destDir` and returns its path.
@@ -81,7 +81,7 @@ export async function find7z(): Promise<string> {
 export async function extractFromNsis(installerPath: string, binaryName: string, destDir: string): Promise<void> {
   const sevenZip = await find7z()
   // `e` extracts without paths; listing the file name limits extraction to the CLI binary.
-  await exec.exec(sevenZip, ['e', '-y', '-bso0', '-bsp0', `-o${destDir}`, installerPath, binaryName], {
+  await exec.exec(quoteExecutable(sevenZip), ['e', '-y', '-bso0', '-bsp0', `-o${destDir}`, installerPath, binaryName], {
     silent: true
   })
 }

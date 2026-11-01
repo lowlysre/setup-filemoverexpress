@@ -137,11 +137,24 @@ export function assertCodesign(details: CodesignDetails, binaryName: string): vo
   }
 }
 
+/**
+ * Code requirement enforced by `codesign --verify -R`: an Apple-anchored chain (so a self-made certificate
+ * can't claim Amazon's Team ID), Amazon's team in the leaf certificate, the Developer ID intermediate
+ * (OID 1.2.840.113635.100.6.2.6) and the Developer ID Application leaf extension (OID 1.2.840.113635.100.6.1.13).
+ */
+export const CODESIGN_REQUIREMENT = [
+  'anchor apple generic',
+  `certificate leaf[subject.OU] = "${APPLE_TEAM_ID}"`,
+  'certificate 1[field.1.2.840.113635.100.6.2.6] exists',
+  'certificate leaf[field.1.2.840.113635.100.6.1.13] exists'
+].join(' and ')
+
 export async function verifyCodesign(filePath: string, binaryName: string): Promise<void> {
-  const check = await exec.getExecOutput('codesign', ['--verify', '--strict', '--verbose=2', filePath], {
-    ignoreReturnCode: true,
-    silent: true
-  })
+  const check = await exec.getExecOutput(
+    'codesign',
+    ['--verify', '--strict', '--verbose=2', `-R=${CODESIGN_REQUIREMENT}`, filePath],
+    { ignoreReturnCode: true, silent: true }
+  )
   if (check.exitCode !== 0) {
     throw new Error(`codesign rejected '${binaryName}': ${check.stderr.trim() || check.stdout.trim()}`)
   }

@@ -2,9 +2,10 @@ import { mkdir } from 'node:fs/promises'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as core from '@actions/core'
+import semver from 'semver'
 import { AWS_ENV, resolveRegion } from './aws.js'
 import { validateRegion, writeTransferProfile, configFilePath } from './config.js'
-import { CONFIG_DIR_ENV } from './constants.js'
+import { CONFIG_DIR_ENV, LAST_VERSION_IGNORING_ACCELERATION } from './constants.js'
 import { getInputs, type Inputs } from './inputs.js'
 import { install, smokeTest } from './installer.js'
 import { resolveTarget } from './platform.js'
@@ -34,7 +35,7 @@ export async function run(): Promise<void> {
 
     let transferProfile = ''
     if (inputs.bucket) {
-      transferProfile = await configureTransferProfile(inputs)
+      transferProfile = await configureTransferProfile(inputs, installed.version)
     }
 
     if (inputs.validateCredentials) {
@@ -55,7 +56,12 @@ export async function run(): Promise<void> {
   }
 }
 
-async function configureTransferProfile(inputs: Inputs): Promise<string> {
+async function configureTransferProfile(inputs: Inputs, installedVersion: string): Promise<string> {
+  if (inputs.accelerate && semver.lte(installedVersion, LAST_VERSION_IGNORING_ACCELERATION)) {
+    core.warning(
+      `File Mover Express ${installedVersion} doesn't apply the 'accelerated' profile setting, so transfers use the regular S3 endpoint. The action still writes it for versions that do.`
+    )
+  }
   const resolved = resolveRegion(inputs.region, inputs.awsProfile)
   if (!resolved) {
     throw new Error(

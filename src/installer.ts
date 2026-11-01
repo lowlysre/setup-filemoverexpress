@@ -8,7 +8,7 @@ import { CONFIG_DIR_ENV, TOOL_NAME } from './constants.js'
 import { extractCli } from './extract.js'
 import type { Target } from './platform.js'
 import { listReleases } from './releases.js'
-import { tempRoot } from './util.js'
+import { quoteExecutable, tempRoot } from './util.js'
 import { selectCachedVersion, selectRelease, type VersionSpec } from './version.js'
 import { verifyAuthenticode, verifyCodesign, verifyDigest } from './verify.js'
 
@@ -126,7 +126,7 @@ export function parseCliVersion(output: string): string | undefined {
 export async function smokeTest(binPath: string, expectedVersion: string): Promise<void> {
   const configDir = await mkdtemp(path.join(tempRoot(), 'fme-smoke-'))
   try {
-    const output = await exec.getExecOutput(binPath, ['--version'], {
+    const output = await exec.getExecOutput(quoteExecutable(binPath), ['--version'], {
       env: { ...process.env, [CONFIG_DIR_ENV]: configDir },
       silent: true
     })

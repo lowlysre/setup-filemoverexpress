@@ -111,5 +111,6 @@ export function selectCachedVersion(cached: string[], spec: VersionSpec, allowPr
     }
     return cached.find(version => semver.eq(version, spec.version))
   }
-  return semver.maxSatisfying(cached, spec.range, { includePrerelease: allowPrerelease }) ?? undefined
+  const candidates = allowPrerelease ? cached : cached.filter(version => !semver.prerelease(version))
+  return semver.maxSatisfying(candidates, spec.range, { includePrerelease: allowPrerelease }) ?? undefined
 }

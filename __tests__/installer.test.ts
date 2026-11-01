@@ -300,10 +300,10 @@ describe('smokeTest', () => {
       return { stdout: 'filemoverexpress version v1.1.1\n', stderr: '', exitCode: 0 }
     })
 
-    await expect(smokeTest('C:\\tools\\filemoverexpress.exe', '1.1.1')).resolves.toBeUndefined()
+    await expect(smokeTest('C:\\Program Files\\tools\\filemoverexpress.exe', '1.1.1')).resolves.toBeUndefined()
 
     expect(exec.getExecOutput).toHaveBeenCalledWith(
-      'C:\\tools\\filemoverexpress.exe',
+      '"C:\\Program Files\\tools\\filemoverexpress.exe"',
       ['--version'],
       expect.objectContaining({ silent: true })
     )

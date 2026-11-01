@@ -11,6 +11,7 @@ import { makeTempDir, removeDir, snapshotEnv, unsetEnv } from './helpers.js'
 
 const mocks = vi.hoisted(() => ({
   info: vi.fn<(message: string) => void>(),
+  warning: vi.fn<(message: string) => void>(),
   addPath: vi.fn<(inputPath: string) => void>(),
   exportVariable: vi.fn<(name: string, value: string) => void>(),
   setOutput: vi.fn<(name: string, value: string) => void>(),
@@ -44,6 +45,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@actions/core', () => ({
   info: mocks.info,
+  warning: mocks.warning,
   addPath: mocks.addPath,
   exportVariable: mocks.exportVariable,
   setOutput: mocks.setOutput,
@@ -104,6 +106,7 @@ beforeEach(async () => {
   unsetEnv('AWS_REGION', 'AWS_DEFAULT_REGION', 'FME_CONFIG_DIR')
 
   mocks.info.mockReset()
+  mocks.warning.mockReset()
   mocks.addPath.mockReset()
   mocks.exportVariable.mockReset()
   mocks.setOutput.mockReset()
@@ -170,24 +173,37 @@ describe('run', () => {
     expect(core.setOutput).toHaveBeenCalledWith('transfer-profile', 'transfer.default')
   })
 
-  it.each([
-    ['AWS_REGION', 'us-east-1', undefined],
-    ['AWS_DEFAULT_REGION', undefined, 'eu-west-1']
-  ])('preserves existing AWS region environment when %s is set', async (setName, regionValue, defaultValue) => {
-    mocks.getInputs.mockReturnValue(inputs({ bucket: 'media-bucket' }))
-    if (regionValue) {
-      process.env.AWS_REGION = regionValue
-    }
-    if (defaultValue) {
-      process.env.AWS_DEFAULT_REGION = defaultValue
-    }
-
+  it('warns that File Mover Express 1.1.1 ignores the accelerated setting, but only for versions that do', async () => {
+    mocks.getInputs.mockReturnValue(inputs({ bucket: 'media-bucket', accelerate: true }))
     await run()
+    expect(core.warning).toHaveBeenCalledWith(
+      expect.stringContaining("doesn't apply the 'accelerated' profile setting")
+    )
 
-    expect(core.exportVariable).not.toHaveBeenCalledWith('AWS_REGION', expect.any(String))
-    expect(core.exportVariable).not.toHaveBeenCalledWith('AWS_DEFAULT_REGION', expect.any(String))
-    expect(process.env[setName]).toBe(regionValue ?? defaultValue)
+    mocks.warning.mockReset()
+    mocks.install.mockResolvedValue({ ...installed, version: '1.2.0' })
+    await run()
+    expect(core.warning).not.toHaveBeenCalled()
   })
+
+  it.each([['AWS_DEFAULT_REGION', undefined, 'eu-west-1']])(
+    'preserves existing AWS region environment when %s is set',
+    async (setName, regionValue, defaultValue) => {
+      mocks.getInputs.mockReturnValue(inputs({ bucket: 'media-bucket' }))
+      if (regionValue) {
+        process.env.AWS_REGION = regionValue
+      }
+      if (defaultValue) {
+        process.env.AWS_DEFAULT_REGION = defaultValue
+      }
+
+      await run()
+
+      expect(core.exportVariable).not.toHaveBeenCalledWith('AWS_REGION', expect.any(String))
+      expect(core.exportVariable).not.toHaveBeenCalledWith('AWS_DEFAULT_REGION', expect.any(String))
+      expect(process.env[setName]).toBe(regionValue ?? defaultValue)
+    }
+  )
 
   it('validates credentials for the selected profile even when no bucket profile was requested', async () => {
     mocks.getInputs.mockReturnValue(inputs({ validateCredentials: true, transferProfile: 'custom-profile' }))

@@ -87,7 +87,9 @@ inputs:
     required: false
     default: none
   accelerate:
-    description: Use S3 Transfer Acceleration. Can't be combined with `endpoint`.
+    description: >-
+      Write `accelerated: true` to the transfer profile for S3 Transfer Acceleration. Can't be combined with
+      `endpoint`. File Mover Express 1.1.1 ignores the setting.
     required: false
     default: 'false'
   validate-credentials:

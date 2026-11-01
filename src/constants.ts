@@ -11,6 +11,8 @@ export const WINDOWS_SIGNER_ORG = 'Amazon Web Services, Inc.'
 export const CONFIG_FILE_NAME = 'configuration.yaml'
 export const CONFIG_DIR_ENV = 'FME_CONFIG_DIR'
 export const DEFAULT_TRANSFER_PROFILE = 'default'
+/** Newest upstream release known to ignore the `accelerated` transfer profile setting when building its S3 client. */
+export const LAST_VERSION_IGNORING_ACCELERATION = '1.1.1'
 export const AWS_ENV = {
   region: 'AWS_REGION',
   defaultRegion: 'AWS_DEFAULT_REGION',

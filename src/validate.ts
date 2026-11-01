@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { CONFIG_DIR_ENV } from './constants.js'
+import { quoteExecutable } from './util.js'
 import { credentialValidationError } from './business/validate.js'
 
 export { credentialsValidated, failureDetail, stripAnsi, credentialValidationError } from './business/validate.js'
@@ -13,7 +14,7 @@ export async function validateCredentials(
   awsProfileInput: string
 ): Promise<void> {
   core.info(`Validating AWS credentials for transfer profile '${profile}'`)
-  const output = await exec.getExecOutput(binPath, ['validate-credentials', profile], {
+  const output = await exec.getExecOutput(quoteExecutable(binPath), ['validate-credentials', profile], {
     env: { ...process.env, [CONFIG_DIR_ENV]: configDir },
     ignoreReturnCode: true,
     silent: true

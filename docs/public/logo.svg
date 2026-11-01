@@ -2,8 +2,8 @@
   <rect x="4" y="4" width="56" height="56" rx="12" fill="#1b2a41"/>
   <path d="M18 21h18l-6-6" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M46 43H28l6 6" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M17 36Q31 20 44 35" fill="none" stroke="#3fb950" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="17" cy="37" r="2.6" fill="#3fb950"/>
-  <circle cx="46" cy="36" r="4" fill="#3fb950"/>
-  <circle cx="47.2" cy="34.8" r="1" fill="#1b2a41"/>
+  <path d="M17 35Q31 19 44 34" fill="none" stroke="#3fb950" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="17" cy="36" r="2.6" fill="#3fb950"/>
+  <circle cx="46" cy="35" r="4" fill="#3fb950"/>
+  <circle cx="47.2" cy="33.8" r="1" fill="#1b2a41"/>
 </svg>

@@ -136,10 +136,12 @@ describe('validateCredentials adapter', () => {
       stdout: 'Validated credentials for transfer-a',
       stderr: ''
     })
-    await expect(validateCredentials('fme-bin', 'C:\\config\\dir', 'transfer-a', '')).resolves.toBeUndefined()
+    await expect(
+      validateCredentials('C:\\Program Files\\fme\\fme-bin', 'C:\\config\\dir', 'transfer-a', '')
+    ).resolves.toBeUndefined()
 
     expect(exec.getExecOutput).toHaveBeenCalledWith(
-      'fme-bin',
+      '"C:\\Program Files\\fme\\fme-bin"',
       ['validate-credentials', 'transfer-a'],
       expect.objectContaining({
         env: expect.objectContaining({ [CONFIG_DIR_ENV]: 'C:\\config\\dir' }),

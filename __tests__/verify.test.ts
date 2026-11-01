@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   assertAuthenticode,
   assertCodesign,
+  CODESIGN_REQUIREMENT,
   parseAuthenticodeOutput,
   parseCodesignDetails,
   parseDistinguishedNameOrg,
@@ -347,6 +348,16 @@ describe('parseCodesignDetails / assertCodesign', () => {
   })
 })
 
+describe('CODESIGN_REQUIREMENT', () => {
+  it('anchors to Apple and requires Amazon, the Developer ID intermediate and the application leaf', () => {
+    expect(CODESIGN_REQUIREMENT).toBe(
+      'anchor apple generic and certificate leaf[subject.OU] = "94KV3E626L" and ' +
+        'certificate 1[field.1.2.840.113635.100.6.2.6] exists and ' +
+        'certificate leaf[field.1.2.840.113635.100.6.1.13] exists'
+    )
+  })
+})
+
 describe('verifyCodesign', () => {
   const binPath = path.join('staging', 'filemoverexpress')
 
@@ -361,7 +372,7 @@ describe('verifyCodesign', () => {
     const calls = vi.mocked(exec.getExecOutput).mock.calls
     expect(calls).toHaveLength(2)
     expect(calls[0][0]).toBe('codesign')
-    expect(calls[0][1]).toEqual(['--verify', '--strict', '--verbose=2', binPath])
+    expect(calls[0][1]).toEqual(['--verify', '--strict', '--verbose=2', `-R=${CODESIGN_REQUIREMENT}`, binPath])
     expect(calls[0][2]).toMatchObject({ ignoreReturnCode: true, silent: true })
     expect(calls[1][0]).toBe('codesign')
     expect(calls[1][1]).toEqual(['--display', '--verbose=4', binPath])

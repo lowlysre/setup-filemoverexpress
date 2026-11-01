@@ -124,7 +124,10 @@ aws s3api put-bucket-accelerate-configuration \
   --accelerate-configuration Status=Enabled
 ```
 
-Then set `accelerate: true`, which writes `accelerated: true` into the transfer profile so File Mover Express sends requests to the `s3-accelerate` endpoint. The IAM permissions don't change. To measure the gain, write a second profile for the same bucket and time both:
+> [!WARNING]
+> File Mover Express 1.1.1 reads `accelerated` from the profile but doesn't use it when it builds its S3 client, so transfers still use the regular S3 endpoint and acceleration has no effect (checked against the upstream source on `main`). The action warns when you set `accelerate: true` with that version or earlier, and still writes the setting for later versions.
+
+Then set `accelerate: true`, which writes `accelerated: true` into the transfer profile. In versions that apply it, File Mover Express sends requests to the `s3-accelerate` endpoint. The IAM permissions don't change. To measure the gain, write a second profile for the same bucket and time both:
 
 ```yaml
 - uses: lowlysre/setup-filemoverexpress@v1
