@@ -24,7 +24,7 @@
     --vp-sidebar-width: 320px;
   }
 
-  .VPNavBar.has-sidebar .title {
+  .VPNavBar.has-sidebar .wrapper > .container > .title {
     padding-right: 48px;
   }
 }
