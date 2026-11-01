@@ -12,16 +12,16 @@ s5cmd is a standalone tool built for fast parallel S3 operations, with wildcard 
 
 ## Which one to use
 
-| Need                                                  | File Mover Express                               | AWS CLI                  | s5cmd                 |
-| ----------------------------------------------------- | ------------------------------------------------ | ------------------------ | --------------------- |
-| Upload or download a directory or prefix              | Yes                                              | Yes                      | Yes                   |
-| Mirror a directory and delete what's gone             | No                                               | `aws s3 sync --delete`   | `s5cmd sync --delete` |
-| Skip files that haven't changed                       | No, but `--max-age` skips old files              | `aws s3 sync`            | `s5cmd sync`          |
-| Store XXH3, XXHash, or MD5 checksums with the objects | Yes                                              | No                       | No                    |
-| Filter by regular expression or file age              | `--filter`, `--max-age`                          | Glob include and exclude | Wildcards             |
-| Copy between buckets, presign URLs, manage objects    | No                                               | Yes                      | Copy and remove       |
-| Tune parallelism and chunking per transfer           | `--max-active-transfers`, `--threads`, `--chunk-size`, `--auto-tuning` | `max_concurrent_requests` and related config | `--numworkers`, `--concurrency` |
-| Fail the step when a transfer fails                   | Needs a [log check](../how-to/fail-on-errors.md) | Non-zero exit code       | Non-zero exit code    |
+| Need                                                  | File Mover Express                                                     | AWS CLI                                      | s5cmd                           |
+| ----------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------- | ------------------------------- |
+| Upload or download a directory or prefix              | Yes                                                                    | Yes                                          | Yes                             |
+| Mirror a directory and delete what's gone             | No                                                                     | `aws s3 sync --delete`                       | `s5cmd sync --delete`           |
+| Skip files that haven't changed                       | No, but `--max-age` skips old files                                    | `aws s3 sync`                                | `s5cmd sync`                    |
+| Store XXH3, XXHash, or MD5 checksums with the objects | Yes                                                                    | No                                           | No                              |
+| Filter by regular expression or file age              | `--filter`, `--max-age`                                                | Glob include and exclude                     | Wildcards                       |
+| Copy between buckets, presign URLs, manage objects    | No                                                                     | Yes                                          | Copy and remove                 |
+| Tune parallelism and chunking per transfer            | `--max-active-transfers`, `--threads`, `--chunk-size`, `--auto-tuning` | `max_concurrent_requests` and related config | `--numworkers`, `--concurrency` |
+| Fail the step when a transfer fails                   | Needs a [log check](../how-to/fail-on-errors.md)                       | Non-zero exit code                           | Non-zero exit code              |
 
 The table states what each tool documents. It doesn't rank speed, because that depends on the file sizes, the runner, and the bucket's region.
 
