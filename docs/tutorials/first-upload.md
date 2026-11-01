@@ -1,6 +1,6 @@
 # Your first upload
 
-This tutorial takes a repository with no AWS access to a workflow that uploads a build output to S3 with File Mover Express. It uses GitHub's OIDC provider, so no long-lived AWS keys end up in repository secrets.
+This tutorial takes a repository with no AWS access to a workflow that uploads a build output to S3 with [File Mover Express](https://github.com/awslabs/filemoverexpress). It uses GitHub's OIDC provider, so no long-lived AWS keys end up in repository secrets.
 
 By the end you have:
 

@@ -1,6 +1,6 @@
 # CLI behavior in CI
 
-The upstream [Using the CLI](https://awslabs.github.io/filemoverexpress/) guide documents every command and flag, plus the daemon and GUI features. This page covers only what matters when the CLI runs in a workflow step. Throughput flags such as `--max-active-transfers` and `--threads` are in [Upload and download faster](../how-to/transfers.md).
+The upstream [Using the CLI](https://github.com/awslabs/filemoverexpress/blob/main/docs/Using-the-CLI.md) guide documents every command and flag, plus the daemon and GUI features. This page covers only what matters when the CLI runs in a workflow step. Throughput flags such as `--max-active-transfers` and `--threads` are in [Upload and download faster](../how-to/transfers.md).
 
 ## Commands used in workflows
 

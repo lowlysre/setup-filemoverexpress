@@ -31,7 +31,7 @@ features:
     linkText: Fail the job on transfer errors
 ---
 
-Setup AWS Labs' File Mover Express in GitHub Actions with an independently maintained setup action. This project is not affiliated with or endorsed by AWS.
+Setup AWS Labs' [File Mover Express](https://github.com/awslabs/filemoverexpress) in GitHub Actions with an independently maintained setup action. This project is not affiliated with or endorsed by AWS.
 
 ## What runs where
 

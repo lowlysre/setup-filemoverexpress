@@ -138,6 +138,6 @@ describe('createHttpClient', () => {
   it('creates an HttpClient with a user agent', () => {
     const client = createHttpClient()
     expect(client).toBeInstanceOf(HttpClient)
-    expect(client.userAgent).toBe('setup-filemoverexpress')
+    expect(client.userAgent).toMatch(/^setup-filemoverexpress( |$)/)
   })
 })

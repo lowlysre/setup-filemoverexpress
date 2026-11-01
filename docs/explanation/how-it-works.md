@@ -8,7 +8,7 @@ The action reads `filemoverexpress-version`, or `filemoverexpress-version-file` 
 
 Unless `check-latest` is `true` or the request is `latest`, it looks in the runner tool cache first. A cached version that satisfies an exact version or a range ends the install phase right there: no API call and no download. That's the [cache hit path](./caching.md).
 
-Otherwise it lists releases from api.github.com for awslabs/filemoverexpress, drops drafts (and prereleases unless `allow-prerelease` is set), and picks the highest version that satisfies the request. Upstream tags have no `v` prefix, but the action accepts either form.
+Otherwise it lists releases from api.github.com for [awslabs/filemoverexpress](https://github.com/awslabs/filemoverexpress/releases), drops drafts (and prereleases unless `allow-prerelease` is set), and picks the highest version that satisfies the request. Upstream tags have no `v` prefix, but the action accepts either form.
 
 ## 2. Download and check the digest
 
