@@ -143,7 +143,7 @@ When the transfer profile has a checksum algorithm set, uploads hash each file f
 
 File Mover Express copies files; it doesn't mirror a directory. The CLI has no option to delete objects or local files that no longer exist on the other side, and its documentation describes no comparison of size or modified time to skip unchanged files.
 
-For a one-way sync that deletes, use the AWS CLI or [s5cmd](https://github.com/peak/s5cmd) in the same job. Both read the credentials that configure-aws-credentials exports.
+For a one-way sync that deletes, use the AWS CLI or [s5cmd](https://github.com/peak/s5cmd) in the same job. [Choosing a transfer tool](../explanation/choosing-a-tool.md) compares the three. Both read the credentials that configure-aws-credentials exports.
 
 ```yaml
 - run: aws s3 sync ./site "s3://my-build-bucket/site" --delete

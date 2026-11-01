@@ -63,7 +63,7 @@ File Mover Express copies files between the runner and S3. The AWS CLI and [s5cm
 | Copy between buckets, manage objects, presign URLs          | ❌                                                 | ✅                            |
 | Fail the step on a failed transfer                          | Needs a [log check](docs/how-to/fail-on-errors.md) | ✅ Non-zero exit              |
 
-You can use both in one job. See [Sync or delete](docs/how-to/transfers.md#sync-or-delete).
+You can use both in one job. See [Choosing a transfer tool](docs/explanation/choosing-a-tool.md) for when to use which, and [Sync or delete](docs/how-to/transfers.md#sync-or-delete) for mirror commands.
 
 ## Documentation
 

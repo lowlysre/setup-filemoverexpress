@@ -54,6 +54,7 @@ export default defineConfig({
         text: 'Explanation',
         items: [
           { text: 'How it works', link: '/explanation/how-it-works' },
+          { text: 'Choosing a transfer tool', link: '/explanation/choosing-a-tool' },
           { text: 'Security model', link: '/explanation/security' },
           { text: 'Credentials and interop', link: '/explanation/credentials' },
           { text: 'Exit codes', link: '/explanation/exit-codes' },
