@@ -35,6 +35,7 @@ const mocks = vi.hoisted(() => ({
     }) => Promise<InstallResult>
   >(),
   smokeTest: vi.fn<(binPath: string, expectedVersion: string) => Promise<void>>(),
+  seedDefaultConfiguration: vi.fn<(binPath: string, configDir: string) => Promise<void>>(),
   resolveRegion: vi.fn<(regionInput: string, awsProfileInput: string) => ResolvedRegion | undefined>(),
   validateRegion: vi.fn<(region: string) => string>(),
   writeTransferProfile: vi.fn<(configDir: string, options: TransferProfileOptions) => Promise<string>>(),
@@ -53,7 +54,11 @@ vi.mock('@actions/core', () => ({
   group: mocks.group
 }))
 vi.mock('../src/inputs.js', () => ({ getInputs: mocks.getInputs }))
-vi.mock('../src/installer.js', () => ({ install: mocks.install, smokeTest: mocks.smokeTest }))
+vi.mock('../src/installer.js', () => ({
+  install: mocks.install,
+  smokeTest: mocks.smokeTest,
+  seedDefaultConfiguration: mocks.seedDefaultConfiguration
+}))
 vi.mock('../src/aws.js', () => ({
   AWS_ENV: {
     region: 'AWS_REGION',
@@ -115,6 +120,7 @@ beforeEach(async () => {
   mocks.getInputs.mockReset().mockReturnValue(inputs())
   mocks.install.mockReset().mockResolvedValue(installed)
   mocks.smokeTest.mockReset().mockResolvedValue(undefined)
+  mocks.seedDefaultConfiguration.mockReset().mockResolvedValue(undefined)
   mocks.resolveRegion.mockReset().mockReturnValue({ region: 'us-west-2', source: 'AWS_REGION' })
   mocks.validateRegion.mockReset().mockImplementation(region => region)
   mocks.writeTransferProfile.mockReset().mockResolvedValue(path.join(tempDir, 'fme-config', 'configuration.yaml'))
@@ -157,6 +163,10 @@ describe('run', () => {
     await run()
 
     expect(mocks.resolveRegion).toHaveBeenCalledWith('', '')
+    expect(mocks.seedDefaultConfiguration).toHaveBeenCalledWith(installed.binPath, inputs().configDir)
+    expect(mocks.seedDefaultConfiguration.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.writeTransferProfile.mock.invocationCallOrder[0]
+    )
     expect(mocks.validateRegion).toHaveBeenCalledWith('us-west-2')
     expect(mocks.writeTransferProfile).toHaveBeenCalledWith(inputs({ bucket: 'media-bucket' }).configDir, {
       name: 'transfer.default',

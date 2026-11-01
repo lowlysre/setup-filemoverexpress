@@ -1,10 +1,11 @@
+import { existsSync } from 'node:fs'
 import { mkdtemp, rm } from 'node:fs/promises'
 import * as path from 'node:path'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as tc from '@actions/tool-cache'
 import semver from 'semver'
-import { CONFIG_DIR_ENV, TOOL_NAME } from './constants.js'
+import { CONFIG_DIR_ENV, CONFIG_FILE_NAME, TOOL_NAME } from './constants.js'
 import { extractCli } from './extract.js'
 import type { Target } from './platform.js'
 import { listReleases, type Release } from './releases.js'
@@ -150,6 +151,22 @@ function findCached(version: string, target: Target): InstallResult | undefined 
 export function parseCliVersion(output: string): string | undefined {
   const match = /version\s+v?(\S+)/i.exec(output)
   return match ? (semver.valid(semver.clean(match[1])) ?? undefined) : undefined
+}
+
+/**
+ * Lets the CLI write its default configuration (it does so on first start) before the action adds a transfer
+ * profile. A file holding only a profile has no general settings, so uploads warn that
+ * `max-active-transfers=0` is invalid.
+ */
+export async function seedDefaultConfiguration(binPath: string, configDir: string): Promise<void> {
+  if (existsSync(path.join(configDir, CONFIG_FILE_NAME))) {
+    return
+  }
+  await exec.getExecOutput(quoteExecutable(binPath), ['--version'], {
+    env: { ...process.env, [CONFIG_DIR_ENV]: configDir },
+    ignoreReturnCode: true,
+    silent: true
+  })
 }
 
 /**

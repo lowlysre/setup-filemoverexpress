@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { readdir } from 'node:fs/promises'
+import { readdir, mkdir, writeFile } from 'node:fs/promises'
 import * as path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as core from '@actions/core'
@@ -7,7 +7,7 @@ import * as exec from '@actions/exec'
 import * as tc from '@actions/tool-cache'
 import type { Target } from '../src/platform.js'
 import type { Release } from '../src/releases.js'
-import { install, parseCliVersion, smokeTest, type InstallOptions } from '../src/installer.js'
+import { install, parseCliVersion, seedDefaultConfiguration, smokeTest, type InstallOptions } from '../src/installer.js'
 import { parseVersionSpec } from '../src/version.js'
 import { makeTempDir, removeDir, snapshotEnv, unsetEnv } from './helpers.js'
 
@@ -315,6 +315,31 @@ describe('parseCliVersion', () => {
     ['version vnot-semver', undefined]
   ])('parses %j', (output, expected) => {
     expect(parseCliVersion(output)).toBe(expected)
+  })
+})
+
+describe('seedDefaultConfiguration', () => {
+  it('starts the CLI against the config dir when no configuration exists yet', async () => {
+    mocks.getExecOutput.mockResolvedValue({ stdout: 'filemoverexpress version v1.1.1\n', stderr: '', exitCode: 0 })
+    const configDir = path.join(tempDir ?? '', 'fme-config')
+
+    await seedDefaultConfiguration('C:\\Program Files\\tools\\filemoverexpress.exe', configDir)
+
+    expect(exec.getExecOutput).toHaveBeenCalledWith(
+      '"C:\\Program Files\\tools\\filemoverexpress.exe"',
+      ['--version'],
+      expect.objectContaining({ env: expect.objectContaining({ FME_CONFIG_DIR: configDir }), silent: true })
+    )
+  })
+
+  it('leaves an existing configuration alone', async () => {
+    const configDir = path.join(tempDir ?? '', 'existing')
+    await mkdir(configDir, { recursive: true })
+    await writeFile(path.join(configDir, 'configuration.yaml'), 'general: {}\n')
+
+    await seedDefaultConfiguration('fme', configDir)
+
+    expect(exec.getExecOutput).not.toHaveBeenCalled()
   })
 })
 

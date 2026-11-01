@@ -31042,6 +31042,7 @@ function getInputs() {
 }
 
 // src/installer.ts
+import { existsSync as existsSync7 } from "node:fs";
 import { mkdtemp as mkdtemp2, rm as rm3 } from "node:fs/promises";
 import * as path11 from "node:path";
 
@@ -31722,6 +31723,16 @@ function parseCliVersion(output) {
   const match = /version\s+v?(\S+)/i.exec(output);
   return match ? import_semver2.default.valid(import_semver2.default.clean(match[1])) ?? void 0 : void 0;
 }
+async function seedDefaultConfiguration(binPath, configDir) {
+  if (existsSync7(path11.join(configDir, CONFIG_FILE_NAME))) {
+    return;
+  }
+  await getExecOutput(quoteExecutable(binPath), ["--version"], {
+    env: { ...process.env, [CONFIG_DIR_ENV]: configDir },
+    ignoreReturnCode: true,
+    silent: true
+  });
+}
 async function smokeTest(binPath, expectedVersion) {
   const configDir = await mkdtemp2(path11.join(tempRoot(), "fme-smoke-"));
   try {
@@ -31744,7 +31755,7 @@ async function smokeTest(binPath, expectedVersion) {
 }
 
 // src/validate.ts
-import { existsSync as existsSync7 } from "node:fs";
+import { existsSync as existsSync8 } from "node:fs";
 import { mkdtemp as mkdtemp3, readFile as readFile2, rm as rm4, writeFile as writeFile3 } from "node:fs/promises";
 import * as path12 from "node:path";
 
@@ -31780,7 +31791,7 @@ async function validateCredentials(binPath, configDir, profile, awsProfileInput)
   const isolatedDir = await mkdtemp3(path12.join(tempRoot(), "fme-validate-"));
   try {
     const file = configFilePath(configDir);
-    const existing = existsSync7(file) ? await readFile2(file, "utf8") : "";
+    const existing = existsSync8(file) ? await readFile2(file, "utf8") : "";
     await writeFile3(path12.join(isolatedDir, CONFIG_FILE_NAME), withInfoLogging(existing), { mode: 384 });
     const output = await getExecOutput(quoteExecutable(binPath), ["validate-credentials", profile], {
       env: { ...process.env, [CONFIG_DIR_ENV]: isolatedDir },
@@ -31819,7 +31830,7 @@ async function run() {
     exportVariable(CONFIG_DIR_ENV, inputs.configDir);
     let transferProfile = "";
     if (inputs.bucket) {
-      transferProfile = await configureTransferProfile(inputs, installed.version);
+      transferProfile = await configureTransferProfile(inputs, installed);
     }
     if (inputs.validateCredentials) {
       await validateCredentials(installed.binPath, inputs.configDir, inputs.transferProfile, inputs.awsProfile);
@@ -31836,10 +31847,10 @@ async function run() {
     setFailed(errorMessage(error2));
   }
 }
-async function configureTransferProfile(inputs, installedVersion) {
-  if (inputs.accelerate && import_semver3.default.lte(installedVersion, LAST_VERSION_IGNORING_ACCELERATION)) {
+async function configureTransferProfile(inputs, installed) {
+  if (inputs.accelerate && import_semver3.default.lte(installed.version, LAST_VERSION_IGNORING_ACCELERATION)) {
     warning(
-      `File Mover Express ${installedVersion} doesn't apply the 'accelerated' profile setting, so transfers use the regular S3 endpoint. The action still writes it for versions that do.`
+      `File Mover Express ${installed.version} doesn't apply the 'accelerated' profile setting, so transfers use the regular S3 endpoint. The action still writes it for versions that do.`
     );
   }
   const resolved = resolveRegion(inputs.region, inputs.awsProfile);
@@ -31850,6 +31861,7 @@ async function configureTransferProfile(inputs, installedVersion) {
   }
   const region = validateRegion(resolved.region);
   info(`Using region ${region} (from ${resolved.source})`);
+  await seedDefaultConfiguration(installed.binPath, inputs.configDir);
   const file = await writeTransferProfile(inputs.configDir, {
     name: inputs.transferProfile,
     bucket: inputs.bucket,
