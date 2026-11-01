@@ -67,8 +67,9 @@ export default defineConfig({
       text: 'Edit this page on GitHub'
     },
     footer: {
-      message: 'Independent project. Not affiliated with or endorsed by AWS. Released under the Apache-2.0 License.',
-      copyright: 'File Mover Express is an open source project from AWS Labs.'
+      message:
+        'Built and maintained by <a href="https://github.com/lowlysre">lowlysre</a>. Not affiliated with or endorsed by AWS. Released under the Apache-2.0 License.',
+      copyright: 'Copyright 2026 lowlysre. File Mover Express is a separate open source project from AWS Labs.'
     }
   }
 })

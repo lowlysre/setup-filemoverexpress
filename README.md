@@ -14,7 +14,7 @@
 
 Install the AWS Labs [File Mover Express](https://github.com/awslabs/filemoverexpress) CLI in GitHub Actions, add it to `PATH`, and optionally configure an S3 transfer profile. The action verifies the download against its SHA-256 digest and, on Windows and macOS, Amazon's code signature. It doesn't perform transfers itself: your workflow runs the CLI.
 
-This is an independent project, not affiliated with or endorsed by AWS.
+This action is built and maintained by [lowlysre](https://github.com/lowlysre). It's an independent project, not affiliated with or endorsed by AWS.
 
 ## Quick start
 
@@ -77,6 +77,6 @@ Full docs are at [lowlysre.github.io/setup-filemoverexpress](https://lowlysre.gi
 
 ## License
 
-This action is licensed under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE) for attribution. It downloads and runs the File Mover Express CLI, which has its own [Apache-2.0 license](https://github.com/awslabs/filemoverexpress/blob/main/LICENSE). Third-party code bundled into the action is listed in [dist/THIRD_PARTY_LICENSES.txt](dist/THIRD_PARTY_LICENSES.txt).
+Copyright 2026 lowlysre. This action is licensed under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE) for attribution. It downloads and runs the File Mover Express CLI, which has its own [Apache-2.0 license](https://github.com/awslabs/filemoverexpress/blob/main/LICENSE). Third-party code bundled into the action is listed in [dist/THIRD_PARTY_LICENSES.txt](dist/THIRD_PARTY_LICENSES.txt).
 
 AWS and Amazon S3 are trademarks of Amazon.com, Inc. or its affiliates. This project is independent and not affiliated with or endorsed by AWS.
