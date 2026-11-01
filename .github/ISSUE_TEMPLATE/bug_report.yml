@@ -1,0 +1,90 @@
+name: Bug report
+description: The action failed or did something unexpected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This tracker covers the setup-filemoverexpress action. Bugs in the `filemoverexpress` CLI itself (transfers, checksums, daemon) belong in [awslabs/filemoverexpress](https://github.com/awslabs/filemoverexpress/issues). Report security issues privately, per the [security policy](https://github.com/lowlysre/setup-filemoverexpress/security/policy).
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you expected, and what the action did instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow snippet
+      description: The steps that use the action, with secrets and account IDs removed.
+      render: yaml
+    validations:
+      required: true
+
+  - type: input
+    id: action-version
+    attributes:
+      label: Action version
+      description: The ref in your `uses:` line, for example `v1`, `v1.2.0`, or a commit SHA.
+      placeholder: v1
+    validations:
+      required: true
+
+  - type: input
+    id: fme-version
+    attributes:
+      label: File Mover Express version
+      description: The `filemoverexpress-version` output, or what `filemoverexpress --version` prints.
+      placeholder: 1.1.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runner-os
+    attributes:
+      label: Runner OS
+      options:
+        - Linux
+        - macOS
+        - Windows
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runner-arch
+    attributes:
+      label: Runner architecture
+      options:
+        - x64
+        - arm64
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runner-type
+    attributes:
+      label: Runner type
+      options:
+        - GitHub-hosted
+        - Self-hosted
+        - Larger runner
+    validations:
+      required: true
+
+  - type: input
+    id: runner-image
+    attributes:
+      label: Runner image or label
+      placeholder: ubuntu-24.04-arm
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: The action's step log, ideally with [debug logging](https://docs.github.com/actions/monitoring-and-troubleshooting-workflows/troubleshooting-workflows/enable-debug-logging) on. Remove secrets and account IDs.
+      render: text
+    validations:
+      required: true

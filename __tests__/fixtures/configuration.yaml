@@ -1,0 +1,54 @@
+# prettier-ignore
+general:
+    noSleep: false
+    retryCount: 3
+    maxActiveChecksums: 17
+    maxActiveTransfers: 100
+    autoMaxActiveTransfers: false
+    targetBandwidth: 0
+logging:
+    directory: logs
+    severity: info
+    maxSize: 50
+    maxAge: 31
+    compress: true
+reports:
+    directory: reports
+apiServer:
+    enabled: true
+    tls:
+        enabled: false
+        certificateFile: ""
+        keyFile: ""
+    remote:
+        enabled: false
+        key: ""
+        ports: []
+        address: ""
+    blockedPaths:
+        - .aws
+        - .filemoverexpress
+        - c:\windows
+    allowedOrigins: []
+    permissions:
+        allowUIConfiguration: false
+        allowLocalRenameDelete: false
+        allowRemoteRenameDelete: false
+protocols:
+    s3:
+        transferProfiles:
+            e2e:
+                name: e2e
+                bucket: fme-e2e
+                region: us-east-1
+                profile: ""
+                endpoint: http://127.0.0.1:5555
+                checksums:
+                    enabled: false
+                    algorithm: none
+                chunkSize: 25
+                threads: 10
+                storageClass: standard
+                authMethod: 0
+                oidcConfig: null
+hotFolders: []

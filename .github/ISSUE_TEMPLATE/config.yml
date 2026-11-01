@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: File Mover Express CLI bugs and requests
+    url: https://github.com/awslabs/filemoverexpress/issues
+    about: Problems with transfers, checksums, or the CLI itself go to the upstream project.
+  - name: Report a security vulnerability
+    url: https://github.com/lowlysre/setup-filemoverexpress/security/advisories/new
+    about: Report privately. Don't open a public issue.
+  - name: Documentation
+    url: https://lowlysre.github.io/setup-filemoverexpress/
+    about: Tutorials, how-to guides, and the input and output reference.

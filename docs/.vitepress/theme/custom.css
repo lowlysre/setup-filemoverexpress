@@ -1,0 +1,8 @@
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(115deg, #b85c16 0%, #d76d36 52%, #aa4e55 100%);
+}
+
+.dark {
+  --vp-home-hero-name-background: linear-gradient(115deg, #f5bd70 0%, #ed9252 52%, #d7838a 100%);
+}

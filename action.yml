@@ -1,0 +1,116 @@
+name: Setup File Mover Express
+description: Install a verified AWS File Mover Express CLI, add it to PATH, and configure an S3 transfer profile.
+author: lowlysre
+branding:
+  icon: upload-cloud
+  color: orange
+
+inputs:
+  filemoverexpress-version:
+    description: >-
+      Version to install: `latest`, an exact version such as `1.1.1`, or a semver range such as `1.x`.
+      Defaults to `latest` when neither this nor `filemoverexpress-version-file` is set.
+    required: false
+    default: ''
+  filemoverexpress-version-file:
+    description: >-
+      Path to a file containing the version, either a bare version or a `.tool-versions` file with a
+      `filemoverexpress <version>` entry. Ignored when `filemoverexpress-version` is set.
+    required: false
+    default: ''
+  architecture:
+    description: 'CPU architecture of the build to install: `x64` or `arm64`. Defaults to the runner architecture.'
+    required: false
+    default: ''
+  check-latest:
+    description: >-
+      Resolve the version against GitHub releases even when a satisfying version is already in the
+      runner tool cache.
+    required: false
+    default: 'false'
+  allow-prerelease:
+    description: Allow prerelease versions to satisfy `filemoverexpress-version`.
+    required: false
+    default: 'false'
+  token:
+    description: >-
+      Token used to query the awslabs/filemoverexpress releases API on github.com, to avoid rate limits.
+      It's never sent to the download host. Leave empty on GitHub Enterprise Server.
+    required: false
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+  verify-signature:
+    description: >-
+      Verify the upstream code signature: Authenticode signer "Amazon Web Services, Inc." on Windows and
+      Apple Team ID 94KV3E626L on macOS. The SHA-256 digest is always verified.
+    required: false
+    default: 'true'
+  config-dir:
+    description: >-
+      Directory for the File Mover Express configuration, checksum cache, and logs. Exported as
+      `FME_CONFIG_DIR`. Defaults to `$RUNNER_TEMP/filemoverexpress`.
+    required: false
+    default: ''
+  transfer-profile:
+    description: Name of the transfer profile to write when `bucket` is set, and to check with `validate-credentials`.
+    required: false
+    default: default
+  bucket:
+    description: S3 bucket name. When set, the action writes a transfer profile for it into the configuration file.
+    required: false
+    default: ''
+  region:
+    description: >-
+      Bucket region. Defaults to `AWS_REGION`, then `AWS_DEFAULT_REGION` (both exported by
+      aws-actions/configure-aws-credentials), then the profile's region in the AWS config file.
+    required: false
+    default: ''
+  aws-profile:
+    description: >-
+      AWS named profile for the transfer profile, e.g. the one written by configure-aws-credentials'
+      `aws-profile` input. Leave empty to use the AWS SDK default credential chain.
+    required: false
+    default: ''
+  endpoint:
+    description: Custom S3 endpoint URL for S3-compatible storage or local testing.
+    required: false
+    default: ''
+  storage-class:
+    description: >-
+      Storage class for uploaded objects: standard, reduced_redundancy, standard_ia, onezone_ia,
+      intelligent_tiering, glacier, deep_archive, or glacier_ir.
+    required: false
+    default: standard
+  checksum-algorithm:
+    description: >-
+      Checksum File Mover Express computes and stores as object metadata: none, md5-hex, xxhash, xxhash64,
+      or xxh3.
+    required: false
+    default: none
+  accelerate:
+    description: Use S3 Transfer Acceleration. Can't be combined with `endpoint`.
+    required: false
+    default: 'false'
+  validate-credentials:
+    description: >-
+      Run `filemoverexpress validate-credentials` for `transfer-profile` and fail the step if the bucket
+      can't be listed. Run aws-actions/configure-aws-credentials first.
+    required: false
+    default: 'false'
+
+outputs:
+  filemoverexpress-version:
+    description: The installed version, e.g. `1.1.1`.
+  filemoverexpress-path:
+    description: Absolute path to the `filemoverexpress` binary.
+  cache-hit:
+    description: '`true` when the binary came from the runner tool cache.'
+  config-dir:
+    description: The configuration directory, also exported as `FME_CONFIG_DIR`.
+  config-file:
+    description: Path to `configuration.yaml` in `config-dir`.
+  transfer-profile:
+    description: Name of the transfer profile the action wrote, or empty when `bucket` isn't set.
+
+runs:
+  using: node24
+  main: dist/index.js

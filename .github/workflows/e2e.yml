@@ -1,0 +1,625 @@
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly, to catch upstream release or asset layout changes.
+    - cron: '23 7 * * 1'
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  MOTO_VERSION: 5.2.5
+  # Not 5000: macOS runners can have the AirPlay receiver listening there.
+  MOTO_ENDPOINT: http://127.0.0.1:5050
+
+jobs:
+  install:
+    name: Install (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-latest
+          - macos-15-intel
+          - windows-latest
+          - windows-11-arm
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up File Mover Express
+        id: setup
+        uses: ./
+
+      - name: Assert first run
+        env:
+          VERSION: ${{ steps.setup.outputs.filemoverexpress-version }}
+          FME_PATH: ${{ steps.setup.outputs.filemoverexpress-path }}
+          CONFIG_DIR: ${{ steps.setup.outputs.config-dir }}
+          CONFIG_FILE: ${{ steps.setup.outputs.config-file }}
+          CACHE_HIT: ${{ steps.setup.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+
+          [[ -n "$VERSION" ]] || fail "filemoverexpress-version output is empty"
+          [[ -n "$FME_PATH" ]] || fail "filemoverexpress-path output is empty"
+          [[ -n "$CONFIG_DIR" ]] || fail "config-dir output is empty"
+          [[ -n "$CONFIG_FILE" ]] || fail "config-file output is empty"
+          [[ "$CACHE_HIT" == "false" ]] || fail "cache-hit is '$CACHE_HIT', expected 'false'"
+
+          bin="$FME_PATH"
+          if command -v cygpath >/dev/null 2>&1; then bin="$(cygpath -u "$bin")"; fi
+          [[ -f "$bin" ]] || fail "filemoverexpress-path '$FME_PATH' is not a file"
+          command -v filemoverexpress >/dev/null || fail "filemoverexpress is not on PATH"
+
+          actual="$(filemoverexpress --version 2>&1)"
+          echo "$actual"
+          [[ "$actual" == *"v${VERSION}"* ]] || fail "'filemoverexpress --version' does not report v${VERSION}"
+
+          [[ "${FME_CONFIG_DIR:-}" == "$CONFIG_DIR" ]] || fail "FME_CONFIG_DIR '${FME_CONFIG_DIR:-}' != config-dir '$CONFIG_DIR'"
+          [[ "$CONFIG_DIR" == "$RUNNER_TEMP"* ]] || fail "config-dir '$CONFIG_DIR' is not under RUNNER_TEMP '$RUNNER_TEMP'"
+          [[ "$CONFIG_FILE" == *configuration.yaml ]] || fail "config-file '$CONFIG_FILE' is not a configuration.yaml"
+
+      - name: Set up File Mover Express again
+        id: setup-again
+        uses: ./
+
+      - name: Assert second run is a tool cache hit
+        env:
+          FIRST_PATH: ${{ steps.setup.outputs.filemoverexpress-path }}
+          SECOND_PATH: ${{ steps.setup-again.outputs.filemoverexpress-path }}
+          FIRST_VERSION: ${{ steps.setup.outputs.filemoverexpress-version }}
+          SECOND_VERSION: ${{ steps.setup-again.outputs.filemoverexpress-version }}
+          CACHE_HIT: ${{ steps.setup-again.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+          [[ "$CACHE_HIT" == "true" ]] || fail "cache-hit is '$CACHE_HIT', expected 'true'"
+          [[ "$SECOND_PATH" == "$FIRST_PATH" ]] || fail "path changed: '$FIRST_PATH' -> '$SECOND_PATH'"
+          [[ "$SECOND_VERSION" == "$FIRST_VERSION" ]] || fail "version changed: '$FIRST_VERSION' -> '$SECOND_VERSION'"
+
+  versions:
+    name: Version spec ${{ matrix.spec }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { spec: '1.0.0', match: exact, expected: '1.0.0' }
+          - { spec: 'v1.1.0', match: exact, expected: '1.1.0' }
+          - { spec: '1.0', match: prefix, expected: '1.0.' }
+          - { spec: '1.x', match: prefix, expected: '1.' }
+          - { spec: '^1.0.0', match: prefix, expected: '1.' }
+          - { spec: 'latest', match: latest, expected: '' }
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up File Mover Express
+        id: setup
+        uses: ./
+        with:
+          filemoverexpress-version: ${{ matrix.spec }}
+
+      - name: Assert resolved version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SPEC: ${{ matrix.spec }}
+          MATCH: ${{ matrix.match }}
+          EXPECTED: ${{ matrix.expected }}
+          VERSION: ${{ steps.setup.outputs.filemoverexpress-version }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+          echo "spec '$SPEC' resolved to '$VERSION'"
+          case "$MATCH" in
+            exact) [[ "$VERSION" == "$EXPECTED" ]] || fail "expected exactly '$EXPECTED'" ;;
+            prefix) [[ "$VERSION" == "$EXPECTED"* ]] || fail "expected a version starting with '$EXPECTED'" ;;
+            latest)
+              latest="$(gh release view -R awslabs/filemoverexpress --json tagName -q .tagName)"
+              latest="${latest#v}"
+              [[ "$VERSION" == "$latest" ]] || fail "expected upstream latest '$latest'"
+              ;;
+            *) fail "unknown match mode '$MATCH'" ;;
+          esac
+          actual="$(filemoverexpress --version 2>&1)"
+          [[ "$actual" == *"v${VERSION}"* ]] || fail "'filemoverexpress --version' reports '$actual'"
+
+  version-file:
+    name: Version file
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Write version files
+        run: |
+          printf '# asdf / mise\nnodejs 24.0.0\nfilemoverexpress 1.1.0\n' > .tool-versions
+          printf '# pinned FME version\n1.0.0\n' > .filemoverexpress-version
+
+      - name: Set up from .tool-versions
+        id: tool-versions
+        uses: ./
+        with:
+          filemoverexpress-version-file: .tool-versions
+
+      - name: Set up from a plain version file
+        id: plain
+        uses: ./
+        with:
+          filemoverexpress-version-file: .filemoverexpress-version
+
+      - name: Assert resolved versions
+        env:
+          TOOL_VERSIONS: ${{ steps.tool-versions.outputs.filemoverexpress-version }}
+          PLAIN: ${{ steps.plain.outputs.filemoverexpress-version }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+          [[ "$TOOL_VERSIONS" == "1.1.0" ]] || fail ".tool-versions resolved to '$TOOL_VERSIONS', expected 1.1.0"
+          [[ "$PLAIN" == "1.0.0" ]] || fail "plain version file resolved to '$PLAIN', expected 1.0.0"
+          actual="$(filemoverexpress --version 2>&1)"
+          [[ "$actual" == *"v1.0.0"* ]] || fail "last setup should put v1.0.0 first on PATH, got '$actual'"
+
+  roundtrip:
+    name: Round trip via moto (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - macos-latest
+          - macos-15-intel
+          - windows-latest
+          - windows-11-arm
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+          # moto only mocks S3, so an emulated x64 Python on Windows arm64 avoids missing native wheels.
+          architecture: ${{ matrix.os == 'windows-11-arm' && 'x64' || '' }}
+
+      - name: Install moto
+        run: python -m pip install --disable-pip-version-check "moto[server]==${MOTO_VERSION}" boto3
+
+      - name: Start moto
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, subprocess, sys
+          from urllib.parse import urlparse
+
+          url = urlparse(os.environ["MOTO_ENDPOINT"])
+          kwargs = {}
+          if os.name == "nt":
+              kwargs["creationflags"] = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+          else:
+              kwargs["start_new_session"] = True
+          log = open("moto.log", "wb")
+          proc = subprocess.Popen(
+              [sys.executable, "-m", "moto.server", "-H", url.hostname, "-p", str(url.port)],
+              stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, **kwargs,
+          )
+          print(f"moto_server pid {proc.pid}")
+          PY
+          for _ in $(seq 1 30); do
+            if curl -fs -o /dev/null "${MOTO_ENDPOINT}/"; then echo "moto is up"; exit 0; fi
+            sleep 1
+          done
+          cat moto.log
+          echo "::error::moto did not start within 30s"
+          exit 1
+
+      # Same variables aws-actions/configure-aws-credentials exports in its default (env) mode.
+      - name: Export AWS credentials and region
+        run: |
+          {
+            echo "AWS_ACCESS_KEY_ID=testing"
+            echo "AWS_SECRET_ACCESS_KEY=testing"
+            echo "AWS_REGION=us-east-1"
+            echo "AWS_DEFAULT_REGION=us-east-1"
+          } >> "$GITHUB_ENV"
+
+      - name: Create bucket
+        run: |
+          python - <<'PY'
+          import os, boto3
+          s3 = boto3.client("s3", endpoint_url=os.environ["MOTO_ENDPOINT"])
+          s3.create_bucket(Bucket="fme-e2e")
+          PY
+
+      - name: Set up File Mover Express
+        id: setup
+        uses: ./
+        with:
+          bucket: fme-e2e
+          endpoint: ${{ env.MOTO_ENDPOINT }}
+          validate-credentials: true
+
+      - name: Assert transfer profile
+        env:
+          PROFILE: ${{ steps.setup.outputs.transfer-profile }}
+        run: |
+          [[ "$PROFILE" == "default" ]] || { echo "::error::transfer-profile output is '$PROFILE', expected 'default'"; exit 1; }
+
+      - name: Create payload
+        run: |
+          set -euo pipefail
+          mkdir -p payload/nested/deep
+          echo "hello from ${GITHUB_RUN_ID}" > payload/small.txt
+          echo "nested file" > payload/nested/deep/file.txt
+          # 20 MiB with --chunk-size 5 forces a multipart upload.
+          python -c "import os; open('payload/big.bin', 'wb').write(os.urandom(20 * 1024 * 1024))"
+
+      - name: Upload
+        run: |
+          set -euo pipefail
+          filemoverexpress upload default payload --prefix "ci/${GITHUB_RUN_ID}" --chunk-size 5 2>&1 | tee upload.log
+          # The CLI exits 0 even when transfers fail, so check its log lines.
+          if grep -E '^(ERROR|FATAL)' upload.log; then
+            echo "::error::upload logged errors"
+            exit 1
+          fi
+
+      - name: Assert object keys
+        run: |
+          python - <<'PY'
+          import os, sys, boto3
+          prefix = f"ci/{os.environ['GITHUB_RUN_ID']}/payload/"
+          s3 = boto3.client("s3", endpoint_url=os.environ["MOTO_ENDPOINT"])
+          found = {o["Key"]: o["Size"] for o in s3.list_objects_v2(Bucket="fme-e2e", Prefix=prefix).get("Contents", [])}
+          print("\n".join(f"{k} ({v} bytes)" for k, v in sorted(found.items())))
+          expected = {"small.txt", "nested/deep/file.txt", "big.bin"}
+          missing = sorted(prefix + k for k in expected if prefix + k not in found)
+          if missing:
+              print(f"::error::missing keys: {missing}")
+              sys.exit(1)
+          if found[prefix + "big.bin"] != 20 * 1024 * 1024:
+              print(f"::error::big.bin is {found[prefix + 'big.bin']} bytes")
+              sys.exit(1)
+          PY
+
+      - name: Download
+        run: |
+          set -euo pipefail
+          filemoverexpress download default out "ci/${GITHUB_RUN_ID}/" 2>&1 | tee download.log
+          if grep -E '^(ERROR|FATAL)' download.log; then
+            echo "::error::download logged errors"
+            exit 1
+          fi
+
+      - name: Compare downloaded files
+        run: diff -r payload "out/ci/${GITHUB_RUN_ID}/payload"
+
+      - name: Upload logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: roundtrip-logs-${{ matrix.os }}
+          path: |
+            moto.log
+            upload.log
+            download.log
+            ${{ env.FME_CONFIG_DIR }}/logs
+            ${{ env.FME_CONFIG_DIR }}/configuration.yaml
+          if-no-files-found: ignore
+          retention-days: 7
+
+  profile-interop:
+    name: AWS profile interop
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+
+      - name: Install moto
+        run: python -m pip install --disable-pip-version-check "moto[server]==${MOTO_VERSION}" boto3 pyyaml
+
+      - name: Start moto
+        run: |
+          set -euo pipefail
+          url="${MOTO_ENDPOINT#http://}"
+          nohup python -m moto.server -H "${url%:*}" -p "${url##*:}" > moto.log 2>&1 < /dev/null &
+          for _ in $(seq 1 30); do
+            if curl -fs -o /dev/null "${MOTO_ENDPOINT}/"; then echo "moto is up"; exit 0; fi
+            sleep 1
+          done
+          cat moto.log
+          echo "::error::moto did not start within 30s"
+          exit 1
+
+      # Mirrors configure-aws-credentials with `aws-profile: fme`: shared files plus AWS_PROFILE only,
+      # no AWS_REGION/AWS_DEFAULT_REGION and no key variables.
+      - name: Write AWS shared config and export AWS_PROFILE
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.aws
+          printf '[fme]\naws_access_key_id = testing\naws_secret_access_key = testing\n' > ~/.aws/credentials
+          printf '[profile fme]\nregion = us-west-2\n' > ~/.aws/config
+          echo "AWS_PROFILE=fme" >> "$GITHUB_ENV"
+
+      - name: Check no region or key variables are set
+        run: |
+          for v in AWS_REGION AWS_DEFAULT_REGION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN; do
+            if [[ -n "${!v:-}" ]]; then echo "::error::$v is set, this test needs it unset"; exit 1; fi
+          done
+
+      - name: Create bucket in us-west-2
+        run: |
+          python - <<'PY'
+          import os, boto3
+          s3 = boto3.Session(profile_name="fme").client("s3", endpoint_url=os.environ["MOTO_ENDPOINT"])
+          s3.create_bucket(Bucket="fme-profile", CreateBucketConfiguration={"LocationConstraint": "us-west-2"})
+          PY
+
+      - name: Set up File Mover Express
+        id: setup
+        uses: ./
+        with:
+          bucket: fme-profile
+          endpoint: ${{ env.MOTO_ENDPOINT }}
+          validate-credentials: true
+
+      - name: Assert region came from the AWS profile
+        env:
+          CONFIG_FILE: ${{ steps.setup.outputs.config-file }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+          [[ "${AWS_REGION:-}" == "us-west-2" ]] || fail "AWS_REGION is '${AWS_REGION:-}', expected us-west-2"
+          [[ "${AWS_DEFAULT_REGION:-}" == "us-west-2" ]] || fail "AWS_DEFAULT_REGION is '${AWS_DEFAULT_REGION:-}', expected us-west-2"
+          python - <<'PY'
+          import os, sys, yaml
+          with open(os.environ["CONFIG_FILE"], encoding="utf-8") as f:
+              profile = yaml.safe_load(f)["protocols"]["s3"]["transferProfiles"]["default"]
+          print(profile)
+          if profile.get("region") != "us-west-2" or profile.get("bucket") != "fme-profile":
+              print("::error::transfer profile should have bucket fme-profile in us-west-2")
+              sys.exit(1)
+          PY
+
+      - name: Upload with profile credentials
+        run: |
+          set -euo pipefail
+          mkdir -p payload
+          echo "profile interop" > payload/hello.txt
+          filemoverexpress upload default payload --prefix "ci/${GITHUB_RUN_ID}" 2>&1 | tee upload.log
+          if grep -E '^(ERROR|FATAL)' upload.log; then
+            echo "::error::upload logged errors"
+            exit 1
+          fi
+          python - <<'PY'
+          import os, sys, boto3
+          key = f"ci/{os.environ['GITHUB_RUN_ID']}/payload/hello.txt"
+          s3 = boto3.Session(profile_name="fme").client("s3", endpoint_url=os.environ["MOTO_ENDPOINT"])
+          s3.head_object(Bucket="fme-profile", Key=key)
+          print(f"found {key}")
+          PY
+
+      - name: Upload logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: profile-interop-logs
+          path: |
+            moto.log
+            upload.log
+            ${{ env.FME_CONFIG_DIR }}/logs
+            ${{ env.FME_CONFIG_DIR }}/configuration.yaml
+          if-no-files-found: ignore
+          retention-days: 7
+
+  negative:
+    name: Expected failures
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 'Case: bucket with no region anywhere'
+        id: no-region
+        continue-on-error: true
+        uses: ./
+        env:
+          AWS_REGION: ''
+          AWS_DEFAULT_REGION: ''
+          AWS_PROFILE: ''
+          AWS_CONFIG_FILE: ${{ runner.temp }}/does-not-exist/config
+        with:
+          bucket: fme-e2e
+
+      - name: 'Case: nonexistent version'
+        id: bad-version
+        continue-on-error: true
+        uses: ./
+        with:
+          filemoverexpress-version: 9.9.9
+
+      - name: 'Case: invalid bucket name'
+        id: bad-bucket
+        continue-on-error: true
+        uses: ./
+        with:
+          bucket: Invalid_Bucket
+          region: us-east-1
+
+      - name: 'Case: endpoint with accelerate'
+        id: endpoint-accelerate
+        continue-on-error: true
+        uses: ./
+        with:
+          bucket: fme-e2e
+          region: us-east-1
+          endpoint: ${{ env.MOTO_ENDPOINT }}
+          accelerate: true
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+
+      - name: Install moto
+        run: python -m pip install --disable-pip-version-check "moto[server]==${MOTO_VERSION}"
+
+      - name: Start moto
+        run: |
+          set -euo pipefail
+          url="${MOTO_ENDPOINT#http://}"
+          nohup python -m moto.server -H "${url%:*}" -p "${url##*:}" > moto.log 2>&1 < /dev/null &
+          for _ in $(seq 1 30); do
+            if curl -fs -o /dev/null "${MOTO_ENDPOINT}/"; then echo "moto is up"; exit 0; fi
+            sleep 1
+          done
+          cat moto.log
+          echo "::error::moto did not start within 30s"
+          exit 1
+
+      # validate-credentials exits 0 for a missing bucket, so the action's output check must fail it.
+      - name: 'Case: validate-credentials against a missing bucket'
+        id: missing-bucket
+        continue-on-error: true
+        uses: ./
+        env:
+          AWS_ACCESS_KEY_ID: testing
+          AWS_SECRET_ACCESS_KEY: testing
+        with:
+          bucket: does-not-exist
+          region: us-east-1
+          endpoint: ${{ env.MOTO_ENDPOINT }}
+          validate-credentials: true
+
+      - name: Assert every case failed
+        env:
+          NO_REGION: ${{ steps.no-region.outcome }}
+          BAD_VERSION: ${{ steps.bad-version.outcome }}
+          BAD_BUCKET: ${{ steps.bad-bucket.outcome }}
+          ENDPOINT_ACCELERATE: ${{ steps.endpoint-accelerate.outcome }}
+          MISSING_BUCKET: ${{ steps.missing-bucket.outcome }}
+        run: |
+          rc=0
+          for case in NO_REGION BAD_VERSION BAD_BUCKET ENDPOINT_ACCELERATE MISSING_BUCKET; do
+            outcome="${!case}"
+            if [[ "$outcome" == "failure" ]]; then
+              echo "$case: failed as expected"
+            else
+              echo "::error::$case outcome was '$outcome', expected 'failure'"
+              rc=1
+            fi
+          done
+          exit "$rc"
+
+      - name: Upload logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: negative-logs
+          path: moto.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  are-we-good:
+    name: are-we-good
+    needs: [install, versions, version-file, roundtrip, profile-interop, negative]
+    if: ${{ always() }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      checks: write # create the "E2E / are-we-good" check run
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Roll up job results
+        uses: lowlydba/are-we-good@6b10e5f2697555fbaf7f8f37ce38d4454c954a4c # v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}
+          create-check-run: true

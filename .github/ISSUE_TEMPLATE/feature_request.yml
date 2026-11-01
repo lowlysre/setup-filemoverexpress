@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest a new input, output, or behavior for the action.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Requests for the `filemoverexpress` CLI itself belong in [awslabs/filemoverexpress](https://github.com/awslabs/filemoverexpress/issues).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you're trying to do in your workflow, and what gets in the way today.
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+      description: Extra steps or scripts you use now, if any.
+      render: yaml
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Runner OS, S3-compatible store, AWS auth setup, or anything else that shapes the request.

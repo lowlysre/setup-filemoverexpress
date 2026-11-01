@@ -1,0 +1,24 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "filemoverexpress-error",
+      "severity": "error",
+      "pattern": [
+        {
+          "regexp": "^(?:\\u001b\\[[0-9;]*m)?(?:ERROR|FATAL)\\s*(?:\\u001b\\[[0-9;]*m)?\\s*\\[[^\\]]+\\]\\s*(.+?)\\s*$",
+          "message": 1
+        }
+      ]
+    },
+    {
+      "owner": "filemoverexpress-warning",
+      "severity": "warning",
+      "pattern": [
+        {
+          "regexp": "^(?:\\u001b\\[[0-9;]*m)?WARNING\\s*(?:\\u001b\\[[0-9;]*m)?\\s*\\[[^\\]]+\\]\\s*(.+?)\\s*$",
+          "message": 1
+        }
+      ]
+    }
+  ]
+}

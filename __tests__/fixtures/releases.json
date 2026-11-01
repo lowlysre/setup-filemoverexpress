@@ -1,0 +1,362 @@
+[
+  {
+    "url": "https://api.github.com/repos/awslabs/filemoverexpress/releases/1817918901",
+    "html_url": "https://github.com/awslabs/filemoverexpress/releases/tag/1.3.0",
+    "tag_name": "1.3.0",
+    "name": "1.3.0",
+    "draft": true,
+    "prerelease": false,
+    "created_at": "2026-10-30T12:00:00Z",
+    "published_at": null,
+    "assets": [
+      {
+        "name": "filemoverexpress-linux-amd64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:d23aaec153f154a63928725b329b585a041e9d82ec7a6e9a45daeab5fb3040b7",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.3.0/filemoverexpress-linux-amd64"
+      },
+      {
+        "name": "filemoverexpress-linux-arm64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:d986d3d7b840181810389515d1b2a552678f8d6fa9b461406aa6dbfc22c6f4ad",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.3.0/filemoverexpress-linux-arm64"
+      },
+      {
+        "name": "filemoverexpress-macos-arm64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:9660942e1dc42ec612f53ed11de0098f0c3a0ef72cf05dd92368d8bee648df23",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.3.0/filemoverexpress-macos-arm64.dmg"
+      },
+      {
+        "name": "filemoverexpress-macos-x64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:04f14094cd3e4c9c3918d703d101946c826bcd20209f3a022366136242d9eee3",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.3.0/filemoverexpress-macos-x64.dmg"
+      },
+      {
+        "name": "filemoverexpress-windows-amd64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:20093d0753ae25a979f9ddb4bdd5d863eaff6481573792477a9527e9fc673a4c",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.3.0/filemoverexpress-windows-amd64-installer.exe"
+      },
+      {
+        "name": "filemoverexpress-windows-arm64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:4a2f19ba525c15113f386ab952b3607d65063553bf39d145007df92adb1085c8",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.3.0/filemoverexpress-windows-arm64-installer.exe"
+      }
+    ]
+  },
+  {
+    "url": "https://api.github.com/repos/awslabs/filemoverexpress/releases/228257589",
+    "html_url": "https://github.com/awslabs/filemoverexpress/releases/tag/nightly",
+    "tag_name": "nightly",
+    "name": "nightly",
+    "draft": false,
+    "prerelease": true,
+    "created_at": "2026-10-29T12:00:00Z",
+    "published_at": "2026-10-29T12:00:00Z",
+    "assets": [
+      {
+        "name": "filemoverexpress-linux-amd64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:b793062367e3fc054732cdade2c6d06b673c14e7c36a623e2c431359eb03d369",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/nightly/filemoverexpress-linux-amd64"
+      },
+      {
+        "name": "filemoverexpress-linux-arm64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:d4d7d931a979ee902b90b4d677a17991fa3ce8872eea02e266a09989b7f4a94f",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/nightly/filemoverexpress-linux-arm64"
+      },
+      {
+        "name": "filemoverexpress-macos-arm64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:4b52b0efd48c06556da66dbaccb1e31394baa84dd251a4c6ba23f74bf5095103",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/nightly/filemoverexpress-macos-arm64.dmg"
+      },
+      {
+        "name": "filemoverexpress-macos-x64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:5348372dd40a943065a5bf5ad546eabc2427a7e72d1e7df65b1aa6b992f6cc28",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/nightly/filemoverexpress-macos-x64.dmg"
+      },
+      {
+        "name": "filemoverexpress-windows-amd64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:23f7f8f831222c8d10b0f5293bee1648be6751a94e6c0dabe9be4243b1bdfff7",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/nightly/filemoverexpress-windows-amd64-installer.exe"
+      },
+      {
+        "name": "filemoverexpress-windows-arm64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:d5ffe5a9e6025c6dfa2d2dce1ad41f3f29f1cb00364aa629fb69d426dc975870",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/nightly/filemoverexpress-windows-arm64-installer.exe"
+      }
+    ]
+  },
+  {
+    "url": "https://api.github.com/repos/awslabs/filemoverexpress/releases/1917078966",
+    "html_url": "https://github.com/awslabs/filemoverexpress/releases/tag/1.2.0-rc.1",
+    "tag_name": "1.2.0-rc.1",
+    "name": "1.2.0-rc.1",
+    "draft": false,
+    "prerelease": true,
+    "created_at": "2026-10-20T12:00:00Z",
+    "published_at": "2026-10-20T12:00:00Z",
+    "assets": [
+      {
+        "name": "filemoverexpress-linux-amd64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:f5716be6b3bf022a36f7a8ae1f43e78ce9ba804d12079c96c65ffea763094d1e",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.2.0-rc.1/filemoverexpress-linux-amd64"
+      },
+      {
+        "name": "filemoverexpress-linux-arm64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:cbfa80ac1f03b0930650ab6f6a7fe2d58722f2a2e6c6f8da6c5caa642e4e2d30",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.2.0-rc.1/filemoverexpress-linux-arm64"
+      },
+      {
+        "name": "filemoverexpress-macos-arm64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:3733dd994cb74cecad07de6e02ef59690606ec063315a10183f7edf1a615add3",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.2.0-rc.1/filemoverexpress-macos-arm64.dmg"
+      },
+      {
+        "name": "filemoverexpress-macos-x64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:9eb109f354e8bd6e82d30051358c919221db3913fa17bc16ee64e2cacec36f95",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.2.0-rc.1/filemoverexpress-macos-x64.dmg"
+      },
+      {
+        "name": "filemoverexpress-windows-amd64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:c62e9cfb18ea177f752b5268ee1679bb4b99ac641ef3e0f99886fc77651282e1",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.2.0-rc.1/filemoverexpress-windows-amd64-installer.exe"
+      },
+      {
+        "name": "filemoverexpress-windows-arm64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:8e52fe0c1dd2f245d85b0435f432282a5fd9ee6f038dbfa927b8a762bc85acc1",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.2.0-rc.1/filemoverexpress-windows-arm64-installer.exe"
+      }
+    ]
+  },
+  {
+    "url": "https://api.github.com/repos/awslabs/filemoverexpress/releases/1678825485",
+    "html_url": "https://github.com/awslabs/filemoverexpress/releases/tag/1.1.1",
+    "tag_name": "1.1.1",
+    "name": "1.1.1",
+    "draft": false,
+    "prerelease": false,
+    "created_at": "2026-10-12T12:00:00Z",
+    "published_at": "2026-10-12T12:00:00Z",
+    "assets": [
+      {
+        "name": "filemoverexpress-linux-amd64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:3660d2bed9a624b4354331fb64dcc108043004a721828fdff7ff7ab025a71675",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.1/filemoverexpress-linux-amd64"
+      },
+      {
+        "name": "filemoverexpress-linux-arm64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:09c8c9d04562d7af74d1a442b1e2f9bf3368de7d826f5dac4a543e34d7f3cec9",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.1/filemoverexpress-linux-arm64"
+      },
+      {
+        "name": "filemoverexpress-macos-arm64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:d06014559d923590c172cfb40f6f9696caae3a590b3d3df014b62b0ee1381ef7",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.1/filemoverexpress-macos-arm64.dmg"
+      },
+      {
+        "name": "filemoverexpress-macos-x64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:6dca944b0e3f4f7fead1806ad80e9fa1fc49e4c43ef5a757b0d4430406e69680",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.1/filemoverexpress-macos-x64.dmg"
+      },
+      {
+        "name": "filemoverexpress-windows-amd64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:6dd16a8d2ec5b54cfa804e5cf2e6e3e83a18f7f806e50c41c3c51ff6bde00428",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.1/filemoverexpress-windows-amd64-installer.exe"
+      },
+      {
+        "name": "filemoverexpress-windows-arm64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:6579c4ec856eb56f131bebdf217ba11870bd1b47a708807a39d4e2be8a883803",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.1/filemoverexpress-windows-arm64-installer.exe"
+      }
+    ]
+  },
+  {
+    "url": "https://api.github.com/repos/awslabs/filemoverexpress/releases/1465731595",
+    "html_url": "https://github.com/awslabs/filemoverexpress/releases/tag/1.1.0",
+    "tag_name": "1.1.0",
+    "name": "1.1.0",
+    "draft": false,
+    "prerelease": false,
+    "created_at": "2026-09-24T12:00:00Z",
+    "published_at": "2026-09-24T12:00:00Z",
+    "assets": [
+      {
+        "name": "filemoverexpress-linux-amd64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:246953a9a3e57e9b3512c68e96d49f21caaef1e3d994fed0a704df5c0f9f5847",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.0/filemoverexpress-linux-amd64"
+      },
+      {
+        "name": "filemoverexpress-linux-arm64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:9f0721f9f35447eb8be644c091b402855890de1d2dfd0f0416b5c7496b01e26c",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.0/filemoverexpress-linux-arm64"
+      },
+      {
+        "name": "filemoverexpress-macos-arm64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:7b648005bc0828951567486a02364606d36fa6aded25b9166be795b743081a33",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.0/filemoverexpress-macos-arm64.dmg"
+      },
+      {
+        "name": "filemoverexpress-macos-x64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:6dc1946951fb93b94d44807930208570133bcc0eff909591a28ddd70a6d015e4",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.0/filemoverexpress-macos-x64.dmg"
+      },
+      {
+        "name": "filemoverexpress-windows-amd64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:e124bb0f7466660d379a333c7715b52bc1892c05787d69b53c4a20fe88b66599",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.0/filemoverexpress-windows-amd64-installer.exe"
+      },
+      {
+        "name": "filemoverexpress-windows-arm64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:f3ce7bdf28f38c6cab197dd057573d172b8b2e489b804ecf99109e53f8c66390",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.1.0/filemoverexpress-windows-arm64-installer.exe"
+      }
+    ]
+  },
+  {
+    "url": "https://api.github.com/repos/awslabs/filemoverexpress/releases/1504724033",
+    "html_url": "https://github.com/awslabs/filemoverexpress/releases/tag/1.0.0",
+    "tag_name": "1.0.0",
+    "name": "1.0.0",
+    "draft": false,
+    "prerelease": false,
+    "created_at": "2026-07-18T12:00:00Z",
+    "published_at": "2026-07-18T12:00:00Z",
+    "assets": [
+      {
+        "name": "filemoverexpress-linux-amd64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:dd54b3a9fac38f330025fc891bc5642a99015d8163134c519c01ce8a19ea13b9",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.0.0/filemoverexpress-linux-amd64"
+      },
+      {
+        "name": "filemoverexpress-linux-arm64",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:fd262a6436ca415d9a4aa4b508294673ffa3abc098828e01fd0fe177d108fc6a",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.0.0/filemoverexpress-linux-arm64"
+      },
+      {
+        "name": "filemoverexpress-macos-arm64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:cc3f7c6f2f0e699f9993cc20e1e1df4bd77254011691def4e9748cb344ddf087",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.0.0/filemoverexpress-macos-arm64.dmg"
+      },
+      {
+        "name": "filemoverexpress-macos-x64.dmg",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:24606e6b3c8b75451b5c1ac395d0c7b7298bed7ce58ba558c4bf6fe35d06e49c",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.0.0/filemoverexpress-macos-x64.dmg"
+      },
+      {
+        "name": "filemoverexpress-windows-amd64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:b2a12d5858444d405a7a3196fb16318ff9aaffa1c76aa94fce8f66653498cd4e",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.0.0/filemoverexpress-windows-amd64-installer.exe"
+      },
+      {
+        "name": "filemoverexpress-windows-arm64-installer.exe",
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 31457280,
+        "digest": "sha256:d16b3a24460e0bce49e47be49980f5b6a68ec8b0217a295c05cacaa4c96e829b",
+        "browser_download_url": "https://github.com/awslabs/filemoverexpress/releases/download/1.0.0/filemoverexpress-windows-arm64-installer.exe"
+      }
+    ]
+  }
+]

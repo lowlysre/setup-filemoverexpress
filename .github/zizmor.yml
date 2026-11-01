@@ -1,0 +1,5 @@
+rules:
+  # e2e.yml tests the action at the commit under test with `uses: ./`. The `$/` self-repository
+  # form is rejected by actionlint 1.7.12, which CI also runs. Revisit when actionlint supports it.
+  self-repository:
+    disable: true
