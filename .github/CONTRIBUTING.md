@@ -31,11 +31,11 @@ Runners execute `dist/index.js` straight from the repository, so `dist/` is comm
 
 Unit tests live in `__tests__/` and run with `npm test`.
 
-The E2E workflow (`.github/workflows/e2e.yml`) runs the real action with `uses: ./` on every hosted runner image: Linux, macOS, and Windows, each on x64 and arm64. It covers:
+The E2E workflow (`.github/workflows/e2e.yml`) runs the real action with `uses: ./`. The install job covers every hosted runner image on each run: Linux, macOS, and Windows, each on x64 and arm64. It covers:
 
 - install, outputs, and a second run served from the tool cache
 - version specs (`1.1.0`, `v1.1.1`, `1.1`, `1.x`, `^1.0.0`, `latest`) and version files
-- an upload and download round trip against [moto](https://github.com/getmoto/moto), a local S3 mock, with the same `AWS_*` variables aws-actions/configure-aws-credentials exports
+- an upload and download round trip against [moto](https://github.com/getmoto/moto), a local S3 mock, with the same `AWS_*` variables aws-actions/configure-aws-credentials exports. Pull requests and pushes run it on the latest Linux, macOS, and Windows runners. The weekly run and manual runs add the other architectures
 - the AWS named-profile path that configure-aws-credentials uses with its `aws-profile` input
 - inputs that have to fail the step
 
