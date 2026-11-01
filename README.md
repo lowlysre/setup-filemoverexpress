@@ -61,6 +61,7 @@ File Mover Express copies files between the runner and S3. The AWS CLI and [s5cm
 | Filter by regex or file age (`--filter`, `--max-age`)       | ✅                                                 | Glob include and exclude only |
 | Store XXH3, XXHash, or MD5 checksums                        | ✅                                                 | ❌                            |
 | Copy between buckets, manage objects, presign URLs          | ❌                                                 | ✅                            |
+| Tune parallelism (files in flight, chunk threads, chunk size) | ✅ [Flags](docs/how-to/transfers.md) and `--auto-tuning` | Worker count or `max_concurrent_requests` |
 | Fail the step on a failed transfer                          | Needs a [log check](docs/how-to/fail-on-errors.md) | ✅ Non-zero exit              |
 
 You can use both in one job. See [Choosing a transfer tool](docs/explanation/choosing-a-tool.md) for when to use which, and [Sync or delete](docs/how-to/transfers.md#sync-or-delete) for mirror commands.

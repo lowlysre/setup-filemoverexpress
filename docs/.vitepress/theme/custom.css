@@ -3,6 +3,17 @@
   --vp-home-hero-name-background: linear-gradient(115deg, #b85c16 0%, #d76d36 52%, #aa4e55 100%);
 }
 
+@media (min-width: 960px) {
+  .VPSidebar .VPSidebarNavTitle,
+  .VPNavBarTitle .title {
+    padding-right: 16px;
+  }
+
+  .VPSidebar {
+    padding-right: 16px;
+  }
+}
+
 .dark {
   --vp-home-hero-name-background: linear-gradient(115deg, #f5bd70 0%, #ed9252 52%, #d7838a 100%);
 }
