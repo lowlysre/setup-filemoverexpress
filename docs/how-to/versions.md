@@ -27,6 +27,9 @@ Any semver range works. The action picks the highest release that satisfies it:
 
 Quote the value. Unquoted, YAML reads `1.10` as the number `1.1`.
 
+> [!NOTE]
+> File Mover Express 1.0.0 shipped only the GUI installers and the MCP server, and the CLI builds start at 1.1.0. Ranges and `latest` skip releases without a CLI build for the runner, and an exact `1.0.0` fails with the missing asset named.
+
 ## Read the version from a file
 
 Keep the version next to your code so local tooling and CI agree:

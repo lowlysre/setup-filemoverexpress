@@ -7,9 +7,9 @@ import semver from 'semver'
 import { CONFIG_DIR_ENV, TOOL_NAME } from './constants.js'
 import { extractCli } from './extract.js'
 import type { Target } from './platform.js'
-import { listReleases } from './releases.js'
+import { listReleases, type Release } from './releases.js'
 import { quoteExecutable, tempRoot } from './util.js'
-import { selectCachedVersion, selectRelease, type VersionSpec } from './version.js'
+import { selectCachedVersion, selectRelease, type ResolvedRelease, type VersionSpec } from './version.js'
 import { verifyAuthenticode, verifyCodesign, verifyDigest } from './verify.js'
 
 export interface InstallOptions {
@@ -41,7 +41,7 @@ export async function install(options: InstallOptions): Promise<InstallResult> {
 
   core.info('Resolving File Mover Express version from github.com/awslabs/filemoverexpress releases')
   const releases = await listReleases(options.token)
-  const { version, release } = selectRelease(releases, spec, options.allowPrerelease)
+  const { version, release } = resolveRelease(releases, options, target)
   core.info(`Resolved File Mover Express ${version}`)
 
   const cached = findCached(version, target)
@@ -52,10 +52,7 @@ export async function install(options: InstallOptions): Promise<InstallResult> {
 
   const asset = release.assets.find(candidate => candidate.name === target.assetName)
   if (!asset) {
-    const names = release.assets.map(candidate => candidate.name).join(', ')
-    throw new Error(
-      `Release ${release.tag_name} has no asset '${target.assetName}' for ${target.platform}/${target.arch}. Available assets: ${names}.`
-    )
+    throw missingAssetError(release, target)
   }
 
   core.info(`Downloading ${asset.browser_download_url}`)
@@ -102,6 +99,39 @@ export async function install(options: InstallOptions): Promise<InstallResult> {
       await rm(staging, { recursive: true, force: true }).catch(() => undefined)
     }
     await rm(assetPath, { force: true }).catch(() => undefined)
+  }
+}
+
+function missingAssetError(release: Release, target: Target): Error {
+  const names = release.assets.map(candidate => candidate.name).join(', ')
+  return new Error(
+    `Release ${release.tag_name} has no asset '${target.assetName}' for ${target.platform}/${target.arch}. Available assets: ${names}.`
+  )
+}
+
+/**
+ * Some upstream releases ship no CLI build (1.0.0 has only the GUI installers and the MCP server), so ranges
+ * and `latest` resolve only among releases that have this platform's asset. An exact version without one
+ * still reports the missing asset instead of a generic no-match error.
+ */
+function resolveRelease(releases: Release[], options: InstallOptions, target: Target): ResolvedRelease {
+  const withAsset = releases.filter(release => release.assets.some(asset => asset.name === target.assetName))
+  try {
+    return selectRelease(withAsset, options.spec, options.allowPrerelease)
+  } catch (error) {
+    const unfiltered = trySelectRelease(releases, options)
+    if (unfiltered) {
+      throw missingAssetError(unfiltered.release, target)
+    }
+    throw error
+  }
+}
+
+function trySelectRelease(releases: Release[], options: InstallOptions): ResolvedRelease | undefined {
+  try {
+    return selectRelease(releases, options.spec, options.allowPrerelease)
+  } catch {
+    return undefined
   }
 }
 

@@ -8,6 +8,7 @@ import * as tc from '@actions/tool-cache'
 import type { Target } from '../src/platform.js'
 import type { Release } from '../src/releases.js'
 import { install, parseCliVersion, smokeTest, type InstallOptions } from '../src/installer.js'
+import { parseVersionSpec } from '../src/version.js'
 import { makeTempDir, removeDir, snapshotEnv, unsetEnv } from './helpers.js'
 
 const mocks = vi.hoisted(() => ({
@@ -182,6 +183,22 @@ describe('install', () => {
     expect(mocks.listReleases).toHaveBeenCalledOnce()
     expect(tc.findAllVersions).not.toHaveBeenCalled()
     expect(tc.downloadTool).not.toHaveBeenCalled()
+  })
+
+  it('skips releases without this platform asset when resolving a range, but names the gap for an exact version', async () => {
+    const withAsset = releaseFor(linux)
+    const withoutAsset = {
+      ...releaseFor(linux, '1.0.0'),
+      assets: [{ name: 'FileMoverExpressUI-x64.dmg', browser_download_url: 'https://x', size: 1 }]
+    }
+    mocks.listReleases.mockResolvedValue([withoutAsset, withAsset])
+
+    const range = await install(options(linux, { spec: parseVersionSpec('1.x') }))
+    expect(range.version).toBe('1.1.1')
+
+    await expect(install(options(linux, { spec: parseVersionSpec('1.0.0') }))).rejects.toThrow(
+      `Release 1.0.0 has no asset '${linux.assetName}' for linux/x64.`
+    )
   })
 
   it('reports the asset and available names when a resolved release lacks this platform', async () => {

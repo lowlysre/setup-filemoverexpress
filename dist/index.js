@@ -31627,7 +31627,7 @@ async function install(options) {
   }
   info("Resolving File Mover Express version from github.com/awslabs/filemoverexpress releases");
   const releases = await listReleases(options.token);
-  const { version, release } = selectRelease(releases, spec, options.allowPrerelease);
+  const { version, release } = resolveRelease(releases, options, target);
   info(`Resolved File Mover Express ${version}`);
   const cached = findCached(version, target);
   if (cached) {
@@ -31636,10 +31636,7 @@ async function install(options) {
   }
   const asset = release.assets.find((candidate) => candidate.name === target.assetName);
   if (!asset) {
-    const names = release.assets.map((candidate) => candidate.name).join(", ");
-    throw new Error(
-      `Release ${release.tag_name} has no asset '${target.assetName}' for ${target.platform}/${target.arch}. Available assets: ${names}.`
-    );
+    throw missingAssetError(release, target);
   }
   info(`Downloading ${asset.browser_download_url}`);
   const assetPath = await downloadTool(asset.browser_download_url);
@@ -31678,6 +31675,31 @@ async function install(options) {
       await rm3(staging, { recursive: true, force: true }).catch(() => void 0);
     }
     await rm3(assetPath, { force: true }).catch(() => void 0);
+  }
+}
+function missingAssetError(release, target) {
+  const names = release.assets.map((candidate) => candidate.name).join(", ");
+  return new Error(
+    `Release ${release.tag_name} has no asset '${target.assetName}' for ${target.platform}/${target.arch}. Available assets: ${names}.`
+  );
+}
+function resolveRelease(releases, options, target) {
+  const withAsset = releases.filter((release) => release.assets.some((asset) => asset.name === target.assetName));
+  try {
+    return selectRelease(withAsset, options.spec, options.allowPrerelease);
+  } catch (error2) {
+    const unfiltered = trySelectRelease(releases, options);
+    if (unfiltered) {
+      throw missingAssetError(unfiltered.release, target);
+    }
+    throw error2;
+  }
+}
+function trySelectRelease(releases, options) {
+  try {
+    return selectRelease(releases, options.spec, options.allowPrerelease);
+  } catch {
+    return void 0;
   }
 }
 function findCached(version, target) {

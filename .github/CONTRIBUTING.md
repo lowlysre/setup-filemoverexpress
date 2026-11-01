@@ -34,7 +34,7 @@ Unit tests live in `__tests__/` and run with `npm test`.
 The E2E workflow (`.github/workflows/e2e.yml`) runs the real action with `uses: ./` on every hosted runner image: Linux, macOS, and Windows, each on x64 and arm64. It covers:
 
 - install, outputs, and a second run served from the tool cache
-- version specs (`1.0.0`, `v1.1.0`, `1.0`, `1.x`, `^1.0.0`, `latest`) and version files
+- version specs (`1.1.0`, `v1.1.1`, `1.1`, `1.x`, `^1.0.0`, `latest`) and version files
 - an upload and download round trip against [moto](https://github.com/getmoto/moto), a local S3 mock, with the same `AWS_*` variables aws-actions/configure-aws-credentials exports
 - the AWS named-profile path that configure-aws-credentials uses with its `aws-profile` input
 - inputs that have to fail the step

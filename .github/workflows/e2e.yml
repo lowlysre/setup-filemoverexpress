@@ -114,9 +114,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { spec: '1.0.0', match: exact, expected: '1.0.0' }
-          - { spec: 'v1.1.0', match: exact, expected: '1.1.0' }
-          - { spec: '1.0', match: prefix, expected: '1.0.' }
+          - { spec: '1.1.0', match: exact, expected: '1.1.0' }
+          - { spec: 'v1.1.1', match: exact, expected: '1.1.1' }
+          - { spec: '1.1', match: prefix, expected: '1.1.' }
           - { spec: '1.x', match: prefix, expected: '1.' }
           - { spec: '^1.0.0', match: prefix, expected: '1.' }
           - { spec: 'latest', match: latest, expected: '' }
@@ -181,7 +181,7 @@ jobs:
       - name: Write version files
         run: |
           printf '# asdf / mise\nnodejs 24.0.0\nfilemoverexpress 1.1.0\n' > .tool-versions
-          printf '# pinned FME version\n1.0.0\n' > .filemoverexpress-version
+          printf '# pinned FME version\n1.1.1\n' > .filemoverexpress-version
 
       - name: Set up from .tool-versions
         id: tool-versions
@@ -203,9 +203,9 @@ jobs:
           set -euo pipefail
           fail() { echo "::error::$*"; exit 1; }
           [[ "$TOOL_VERSIONS" == "1.1.0" ]] || fail ".tool-versions resolved to '$TOOL_VERSIONS', expected 1.1.0"
-          [[ "$PLAIN" == "1.0.0" ]] || fail "plain version file resolved to '$PLAIN', expected 1.0.0"
+          [[ "$PLAIN" == "1.1.1" ]] || fail "plain version file resolved to '$PLAIN', expected 1.1.1"
           actual="$(filemoverexpress --version 2>&1)"
-          [[ "$actual" == *"v1.0.0"* ]] || fail "last setup should put v1.0.0 first on PATH, got '$actual'"
+          [[ "$actual" == *"v1.1.1"* ]] || fail "last setup should put v1.1.1 first on PATH, got '$actual'"
 
   roundtrip:
     name: Round trip via moto (${{ matrix.os }})
