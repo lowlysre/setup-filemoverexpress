@@ -61,17 +61,17 @@
     "@actions/http-client": "^4.0.1",
     "@actions/io": "^3.0.2",
     "@actions/tool-cache": "^4.0.0",
-    "semver": "^7.8.5",
+    "semver": "^7.8.6",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
     "@types/semver": "^7.8.0",
-    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/coverage-v8": "^5.1.0",
     "esbuild": "^0.28.2",
-    "oxlint": "^1.90.0",
-    "oxlint-tsgolint": "^7.0.2005",
-    "prettier": "^3.9.10",
+    "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "^7.0.2007",
+    "prettier": "^3.10.1",
     "typescript": "^7.0.2",
     "vitepress": "^1.6.4",
     "vitest": "^5.0.5"
